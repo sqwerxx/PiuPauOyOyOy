@@ -1,10 +1,69 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="frost">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rhythm Game & Editor</title>
+    <title>Rhythm Studio - Glass Edition with Beat Detector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
+        /* === ТЕМЫ ОФОРМЛЕНИЯ (GLASS & MINIMALISM) === */
+        [data-theme="frost"] {
+            --bg-gradient: radial-gradient(circle at 20% 20%, #e0e7ff 0%, #f1f5f9 50%, #dbeafe 100%);
+            --panel-bg: rgba(255, 255, 255, 0.65);
+            --panel-border: rgba(255, 255, 255, 0.8);
+            --panel-shadow: 0 20px 40px rgba(148, 163, 184, 0.25);
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #06b6d4;
+            --canvas-bg: rgba(255, 255, 255, 0.7);
+            --lane-line: rgba(0, 0, 0, 0.05);
+            --hitline-color: #4f46e5;
+            --glass-blur: blur(24px) saturate(180%);
+            --card-bg: rgba(255, 255, 255, 0.5);
+            --card-border: rgba(255, 255, 255, 0.9);
+        }
+
+        [data-theme="obsidian"] {
+            --bg-gradient: radial-gradient(circle at 80% 20%, #1e1b4b 0%, #0f172a 50%, #020617 100%);
+            --panel-bg: rgba(15, 23, 42, 0.65);
+            --panel-border: rgba(255, 255, 255, 0.12);
+            --panel-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+            --accent: #38bdf8;
+            --canvas-bg: rgba(15, 23, 42, 0.75);
+            --lane-line: rgba(255, 255, 255, 0.06);
+            --hitline-color: #38bdf8;
+            --glass-blur: blur(28px) saturate(190%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="pastel"] {
+            --bg-gradient: radial-gradient(circle at 50% 30%, #fce7f3 0%, #f3e8ff 50%, #e0f2fe 100%);
+            --panel-bg: rgba(255, 255, 255, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.9);
+            --panel-shadow: 0 20px 40px rgba(244, 114, 182, 0.15);
+            --text-main: #1e1b4b;
+            --text-sub: #6b7280;
+            --primary: #ec4899;
+            --primary-hover: #db2777;
+            --accent: #8b5cf6;
+            --canvas-bg: rgba(255, 255, 255, 0.8);
+            --lane-line: rgba(0, 0, 0, 0.04);
+            --hitline-color: #ec4899;
+            --glass-blur: blur(20px) saturate(160%);
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --card-border: rgba(255, 255, 255, 0.95);
+        }
+
         * {
             box-sizing: border-box;
             user-select: none;
@@ -14,209 +73,394 @@
         }
 
         body {
-            background-color: #0f111a;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             overflow: hidden;
+            transition: background 0.5s ease, color 0.3s ease;
         }
 
+        h1, h2, h3, .brand-title, .score-text {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* === ФОНОВЫЕ ДИНАМИЧЕСКИЕ ПУЗЫРИ ДЛЯ ГЛАССМОРФИЗМА === */
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            z-index: 0;
+            animation: float 14s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        .blob-1 { width: 350px; height: 350px; background: #818cf8; top: 10%; left: 15%; }
+        .blob-2 { width: 300px; height: 300px; background: #f472b6; bottom: 15%; right: 15%; animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 50px) scale(1.1); }
+        }
+
+        /* === ГЛАВНАЯ ПАНЕЛЬ ИНТЕРФЕЙСА === */
         #ui-panel {
             position: absolute;
-            top: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            background: rgba(26, 29, 45, 0.95);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #2e3450;
+            gap: 20px;
+            background: var(--panel-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            padding: 28px;
+            border-radius: 28px;
+            border: 1px solid var(--panel-border);
             z-index: 10;
-            max-width: 90vw;
-            width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 440px;
+            max-width: 92vw;
+            box-shadow: var(--panel-shadow);
+            max-height: 88vh;
+            overflow-y: auto;
+            animation: panelAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        @keyframes panelAppear {
+            0% { opacity: 0; transform: translate(-50%, -46%) scale(0.95); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .brand-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        /* ТАБЫ */
         .mode-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 5px;
+            border-radius: 16px;
+            gap: 4px;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 8px;
-            background: #1e2338;
-            border: 1px solid #2e3450;
-            color: #8a94b8;
-            border-radius: 6px;
+            padding: 10px 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 0.82rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tab-btn.active {
-            background: #6366f1;
-            color: #fff;
-            border-color: #6366f1;
+            background: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="obsidian"] .tab-btn.active {
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .tab-content {
             display: none;
             flex-direction: column;
-            gap: 10px;
+            gap: 14px;
+            animation: fadeIn 0.3s ease;
         }
 
-        .tab-content.active {
+        .tab-content.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* КАРТОЧКИ УРОВНЕЙ */
+        .official-levels { display: flex; flex-direction: column; gap: 10px; }
+
+        .level-card {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 14px 18px;
+            border-radius: 18px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+        .level-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
         }
 
-        label {
-            font-size: 0.8rem;
-            color: #8a94b8;
+        .level-info h4 { font-size: 0.95rem; font-weight: 700; color: var(--text-main); }
+        .level-badges { display: flex; gap: 6px; margin-top: 5px; }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
         }
 
-        input[type="file"], input[type="text"], input[type="number"] {
+        .badge-easy { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+        .badge-medium { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+        .badge-hard { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+        .badge-bpm { background: rgba(99, 102, 241, 0.12); color: var(--primary); }
+
+        /* ИНПУТЫ И КНОПКИ */
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 0.78rem; color: var(--text-sub); font-weight: 600; }
+
+        input[type="file"], input[type="text"], input[type="number"], input[type="range"], select {
             font-size: 0.85rem;
-            color: #fff;
-            background: #161927;
-            border: 1px solid #2e3450;
-            padding: 8px;
-            border-radius: 6px;
+            color: var(--text-main);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 10px;
+            border-radius: 14px;
+            outline: none;
+            font-family: inherit;
+            transition: all 0.2s ease;
         }
 
-        button.action-btn {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
+        select option { background: #ffffff; color: #0f172a; }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .btn {
+            background: var(--primary);
             border: none;
             color: white;
-            padding: 10px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 13px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            border-radius: 14px;
             cursor: pointer;
-            transition: transform 0.1s, opacity 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
         }
 
-        button.action-btn:active {
-            transform: scale(0.98);
-        }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn:active { transform: scale(0.97); }
 
-        button.secondary-btn {
-            background: #334155;
-        }
+        .btn-small { padding: 9px 16px; font-size: 0.8rem; border-radius: 12px; }
 
+        /* ПАНЕЛЬ РЕДАКТОРА */
         #editor-controls {
             position: absolute;
-            bottom: 20px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             display: none;
             gap: 10px;
-            background: rgba(26, 29, 45, 0.95);
-            padding: 12px 20px;
-            border-radius: 30px;
-            border: 1px solid #2e3450;
-            z-index: 10;
+            background: var(--panel-bg);
+            backdrop-filter: var(--glass-blur);
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 1px solid var(--panel-border);
+            z-index: 20;
+            box-shadow: var(--panel-shadow);
+            animation: slideUp 0.3s ease;
         }
 
+        @keyframes slideUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        .btn-rec { background: #ef4444; }
+        .btn-rec.recording { animation: pulseRec 1s infinite alternate; }
+
+        @keyframes pulseRec {
+            from { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            to { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+
+        /* КНОПКА ВЫХОДА */
+        #exit-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 15;
+            display: none;
+            background: var(--panel-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        /* HUD */
         #hud {
             position: absolute;
             top: 20px;
             left: 20px;
             pointer-events: none;
-            z-index: 5;
+            z-index: 15;
             display: none;
+            color: var(--text-main);
         }
 
-        .score-text { font-size: 1.4rem; font-weight: bold; }
-        .combo-text { font-size: 1rem; color: #38bdf8; }
+        .score-text { font-size: 1.8rem; font-weight: 800; }
+        .combo-text { font-size: 1rem; color: var(--accent); font-weight: 700; margin-top: 2px; }
 
+        /* ИГРОВОЙ КОНТЕЙНЕР */
         #game-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             height: 100vh;
-            background: #161927;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
-            border-left: 2px solid #2e3450;
-            border-right: 2px solid #2e3450;
+            background: var(--canvas-bg);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid var(--panel-border);
+            border-right: 1px solid var(--panel-border);
             overflow: hidden;
+            z-index: 1;
         }
 
         canvas { width: 100%; height: 100%; display: block; }
 
         #hit-feedback {
             position: absolute;
-            top: 60%;
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
             font-weight: 900;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.1s, transform 0.1s;
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.15s ease;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
 
-    <audio id="audio-player"></audio>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
 
+    <audio id="audio-player"></audio>
+    <button id="exit-btn">← Меню</button>
+
+    <!-- Главное Меню -->
     <div id="ui-panel">
-        <h2 style="text-align: center; margin-bottom: 5px;">Rhythm Game Studio</h2>
+        <div class="brand-title">Rhythm Studio</div>
         
         <div class="mode-tabs">
-            <button class="tab-btn active" onclick="switchTab('play')">Игра</button>
+            <button class="tab-btn active" onclick="switchTab('official')">Треки</button>
+            <button class="tab-btn" onclick="switchTab('custom')">Свой файл</button>
             <button class="tab-btn" onclick="switchTab('editor')">Редактор</button>
+            <button class="tab-btn" onclick="switchTab('style')">Стиль</button>
         </div>
 
-        <!-- Вкладка ИГРА -->
-        <div id="tab-play" class="tab-content active">
+        <!-- Таб 1: Треки -->
+        <div id="tab-official" class="tab-content active">
+            <div class="official-levels" id="official-levels-list"></div>
+        </div>
+
+        <!-- Таб 2: Свой файл -->
+        <div id="tab-custom" class="tab-content">
             <div class="input-group">
-                <label>1. Аудиозапись (.mp3, .wav):</label>
+                <label>1. Аудиофайл (.mp3, .wav):</label>
                 <input type="file" id="play-audio-input" accept="audio/*">
             </div>
             <div class="input-group">
-                <label>2. Карта уровня (.json):</label>
+                <label>2. Карта нот (.json):</label>
                 <input type="file" id="play-json-input" accept=".json">
             </div>
-            <button class="action-btn" id="start-play-btn">Играть</button>
+            <button class="btn" id="start-custom-play-btn">Запустить трек</button>
         </div>
 
-        <!-- Вкладка РЕДАКТОР -->
+        <!-- Таб 3: Редактор c Beat Detection -->
         <div id="tab-editor" class="tab-content">
             <div class="input-group">
-                <label>1. Название трека:</label>
-                <input type="text" id="edit-title" value="My Custom Level">
+                <label>Название трека:</label>
+                <input type="text" id="edit-title" value="My Track">
             </div>
             <div class="input-group">
-                <label>2. BPM (темп):</label>
+                <label>Темп (BPM):</label>
                 <input type="number" id="edit-bpm" value="120">
             </div>
             <div class="input-group">
-                <label>3. Выберите музыку (.mp3, .wav):</label>
+                <label>Музыка (.mp3, .wav):</label>
                 <input type="file" id="edit-audio-input" accept="audio/*">
             </div>
-            <button class="action-btn" id="start-editor-btn">Открыть редактор</button>
+
+            <!-- СЕКЦИЯ АВТО-ГЕНЕРАТОРА -->
+            <div class="input-group" style="border-top: 1px solid var(--panel-border); padding-top: 12px; margin-top: 4px;">
+                <label style="color: var(--primary); font-weight: 800;">⚡ Авто-генерация карты нот:</label>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.7rem;">Порог: <span id="sens-val">1.3</span></label>
+                        <input type="range" id="edit-sensitivity" min="1.0" max="2.0" step="0.05" value="1.3" style="width: 100%;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.7rem;">Мин. шаг: <span id="interval-val">0.18</span>s</label>
+                        <input type="range" id="edit-min-interval" min="0.10" max="0.40" step="0.02" value="0.18" style="width: 100%;">
+                    </div>
+                </div>
+                <button class="btn" id="auto-generate-btn" style="background: var(--accent); margin-top: 4px;">⚡ Авто-анализ MP3 (Beat Detect)</button>
+            </div>
+
+            <button class="btn" id="start-editor-btn" style="margin-top: 6px;">Открыть студию записи</button>
+        </div>
+
+        <!-- Таб 4: Стили -->
+        <div id="tab-style" class="tab-content">
+            <div class="input-group">
+                <label>Тема оформления:</label>
+                <select id="theme-select">
+                    <option value="frost">Glass Frost (Светлое стекло)</option>
+                    <option value="obsidian">Obsidian Glass (Тёмный графит)</option>
+                    <option value="pastel">Soft Pastel (Нежный пастельный)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Скин нот:</label>
+                <select id="skin-select">
+                    <option value="pill">Pill Capsules (Капсулы)</option>
+                    <option value="orb">Glass Orbs (Сферы)</option>
+                    <option value="diamond">Minimal Diamond (Ромбы)</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <!-- Панель управления во время редактирования -->
+    <!-- Панель управления записью -->
     <div id="editor-controls">
-        <button class="action-btn" id="rec-btn">Запись (Старт/Пауза)</button>
-        <button class="action-btn secondary-btn" id="clear-btn">Сброс</button>
-        <button class="action-btn" id="export-btn" style="background: linear-gradient(135deg, #10b981, #059669);">Скачать JSON</button>
+        <button class="btn btn-small btn-rec" id="rec-btn">Запись / Пауза</button>
+        <button class="btn btn-small" id="clear-btn" style="background: #64748b;">Очистить</button>
+        <button class="btn btn-small" id="export-btn" style="background: #10b981;">Скачать .JSON</button>
     </div>
 
+    <!-- HUD -->
     <div id="hud">
         <div class="score-text"><span id="hud-title">Счет:</span> <span id="score-val">0</span></div>
         <div class="combo-text" id="combo-box">Комбо: <span id="combo-val">0</span>x</div>
@@ -233,21 +477,229 @@
         const hitFeedback = document.getElementById('hit-feedback');
         const audioPlayer = document.getElementById('audio-player');
 
-        let currentMode = 'play'; // 'play' или 'editor'
+        let currentMode = 'official'; 
         let isRunning = false;
 
         let score = 0;
         let combo = 0;
+        let currentBpm = 120;
+
+        let currentTheme = 'frost';
+        let currentSkin = 'pill';
+
+        const THEMES_CONFIG = {
+            frost: { laneColors: ['#6366f1', '#06b6d4', '#ec4899', '#8b5cf6'], hitLine: '#4f46e5' },
+            obsidian: { laneColors: ['#818cf8', '#38bdf8', '#f472b6', '#a78bfa'], hitLine: '#38bdf8' },
+            pastel: { laneColors: ['#f43f5e', '#0284c7', '#10b981', '#d97706'], hitLine: '#ec4899' }
+        };
 
         const LANES_COUNT = 4;
         const KEYS = ['KeyZ', 'KeyX', 'KeyC', 'KeyV'];
-        const LANE_COLORS = ['#f43f5e', '#3b82f6', '#3b82f6', '#f43f5e'];
         const LANE_NAMES = ['Z', 'X', 'C', 'V'];
-
-        const SCROLL_SPEED = 1.2; // Время падения ноты (сек)
-        const HIT_WINDOW = 0.15;  // Окно попадания (сек)
+        const HIT_WINDOW = 0.15; 
 
         let levelNotes = []; 
+        let particles = [];
+        let activeHoldStart = [null, null, null, null];
+        let lanePressed = [false, false, false, false];
+
+        let audioCtx = null;
+        let isSynthPlaying = false;
+        let synthStartTime = 0;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSFX(type) {
+            initAudioContext();
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            if (type === 'perfect') {
+                const osc1 = audioCtx.createOscillator();
+                const osc2 = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc1.type = 'sine'; osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(1046.50, now);
+                osc2.frequency.setValueAtTime(1318.51, now);
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+
+                osc1.connect(gain); osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc1.start(now); osc2.start(now);
+                osc1.stop(now + 0.22); osc2.stop(now + 0.22);
+            } else if (type === 'great' || type === 'good') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(783.99, now);
+
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.15);
+            } else if (type === 'miss') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(130, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.16);
+
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.16);
+            }
+        }
+
+        // РЕГУЛЯТОРЫ ДЛЯ BEAT DETECTION UI
+        const sensSlider = document.getElementById('edit-sensitivity');
+        const intervalSlider = document.getElementById('edit-min-interval');
+        
+        sensSlider.addEventListener('input', (e) => document.getElementById('sens-val').textContent = e.target.value);
+        intervalSlider.addEventListener('input', (e) => document.getElementById('interval-val').textContent = e.target.value);
+
+        // МОДУЛЬ АВТОМАТИЧЕСКОГО BEAT DETECTION
+        document.getElementById('auto-generate-btn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('edit-audio-input');
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('Пожалуйста, сначала выберите аудиофайл MP3/WAV в поле "Музыка"!');
+                return;
+            }
+
+            const btn = document.getElementById('auto-generate-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Анализ аудиоспектра...';
+            btn.disabled = true;
+
+            try {
+                initAudioContext();
+                const file = fileInput.files[0];
+                const arrayBuffer = await file.arrayBuffer();
+                const decodedAudio = await audioCtx.decodeAudioData(arrayBuffer);
+
+                const threshold = parseFloat(sensSlider.value);
+                const minInterval = parseFloat(intervalSlider.value);
+
+                // Анализ энергии по моно-каналу
+                const rawData = decodedAudio.getChannelData(0);
+                const sampleRate = decodedAudio.sampleRate;
+                const frameSize = 1024;
+                const energies = [];
+
+                for (let i = 0; i < rawData.length; i += frameSize) {
+                    let sum = 0;
+                    for (let j = 0; j < frameSize && (i + j) < rawData.length; j++) {
+                        sum += rawData[i + j] * rawData[i + j];
+                    }
+                    energies.push(Math.sqrt(sum / frameSize));
+                }
+
+                const windowSize = 20;
+                let lastBeatTime = -minInterval;
+                const generatedNotes = [];
+                let lanePattern = 0;
+
+                for (let i = windowSize; i < energies.length - windowSize; i++) {
+                    const time = (i * frameSize) / sampleRate;
+                    let localSum = 0;
+                    for (let j = i - windowSize; j <= i + windowSize; j++) {
+                        localSum += energies[j];
+                    }
+                    const localAvg = localSum / (windowSize * 2 + 1);
+
+                    // Детекция пиков
+                    if (energies[i] > localAvg * threshold && (time - lastBeatTime) >= minInterval) {
+                        generatedNotes.push({
+                            time: parseFloat(time.toFixed(3)),
+                            lane: lanePattern,
+                            duration: 0,
+                            hit: false,
+                            missed: false
+                        });
+                        lanePattern = (lanePattern + 1) % 4; // Распределение нот по 4 дорожкам
+                        lastBeatTime = time;
+                    }
+                }
+
+                levelNotes = generatedNotes;
+                audioPlayer.src = URL.createObjectURL(file);
+
+                alert(`Успешно! Сгенерировано нот: ${levelNotes.length}.\nНажмите "Открыть студию записи" для игры и редактирования!`);
+            } catch (err) {
+                console.error(err);
+                alert('Ошибка при анализе файла: ' + err.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('theme-select').addEventListener('change', (e) => {
+            currentTheme = e.target.value;
+            document.documentElement.setAttribute('data-theme', currentTheme);
+        });
+
+        document.getElementById('skin-select').addEventListener('change', (e) => {
+            currentSkin = e.target.value;
+        });
+
+        const OFFICIAL_LEVELS = [
+            { id: 1, title: "Velvet Horizons", bpm: 115, difficulty: "Easy", notes: generateOfficialNotes(115, 1) },
+            { id: 2, title: "Glass Pulse", bpm: 135, difficulty: "Medium", notes: generateOfficialNotes(135, 2) },
+            { id: 3, title: "Prismatic Rush", bpm: 160, difficulty: "Hard", notes: generateOfficialNotes(160, 3) }
+        ];
+
+        function generateOfficialNotes(bpm, type) {
+            const list = [];
+            const secPerBeat = 60 / bpm;
+            for (let b = 4; b < 100; b++) {
+                const time = b * secPerBeat;
+                const lane = (b * (type + 1)) % 4;
+                if (b % 8 === 0) {
+                    list.push({ time: parseFloat(time.toFixed(3)), lane: lane, duration: parseFloat((secPerBeat * 1.5).toFixed(3)) });
+                } else if (b % 2 === 0 || type > 1) {
+                    list.push({ time: parseFloat(time.toFixed(3)), lane: lane, duration: 0 });
+                }
+            }
+            return list;
+        }
+
+        function renderOfficialLevels() {
+            const container = document.getElementById('official-levels-list');
+            container.innerHTML = '';
+            OFFICIAL_LEVELS.forEach(lvl => {
+                const diffClass = `badge-${lvl.difficulty.toLowerCase()}`;
+                const card = document.createElement('div');
+                card.className = 'level-card';
+                card.innerHTML = `
+                    <div class="level-info">
+                        <h4>${lvl.title}</h4>
+                        <div class="level-badges">
+                            <span class="badge ${diffClass}">${lvl.difficulty}</span>
+                            <span class="badge badge-bpm">${lvl.bpm} BPM</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-small" onclick="playOfficialLevel(${lvl.id})">Играть</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+        renderOfficialLevels();
 
         function resizeCanvas() {
             canvas.width = canvas.clientWidth;
@@ -261,16 +713,124 @@
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-            if (mode === 'play') {
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                document.getElementById('tab-play').classList.add('active');
-            } else {
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                document.getElementById('tab-editor').classList.add('active');
-            }
+            const tabs = ['official', 'custom', 'editor', 'style'];
+            const idx = tabs.indexOf(mode);
+            document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+            document.getElementById(`tab-${mode}`).classList.add('active');
         }
 
-        // --- ЗАГРУЗКА ФАЙЛОВ ДЛЯ ИГРЫ ---
+        function startSynthAudio(type) {
+            stopSynthAudio();
+            initAudioContext();
+            synthStartTime = audioCtx.currentTime;
+            isSynthPlaying = true;
+            playSynthLoop();
+        }
+
+        function stopSynthAudio() {
+            isSynthPlaying = false;
+        }
+
+        function playSynthLoop() {
+            if (!isSynthPlaying || !audioCtx) return;
+            const now = audioCtx.currentTime - synthStartTime;
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            
+            const freqs = [261.63, 329.63, 392.00, 523.25];
+            osc.frequency.setValueAtTime(freqs[Math.floor(now * 3) % 4], audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+
+            setTimeout(playSynthLoop, (60 / currentBpm) * 500);
+        }
+
+        function getCurrentGameTime() {
+            if (isSynthPlaying && audioCtx) return audioCtx.currentTime - synthStartTime;
+            return audioPlayer.currentTime;
+        }
+
+        window.playOfficialLevel = function(id) {
+            const lvl = OFFICIAL_LEVELS.find(l => l.id === id);
+            if (!lvl) return;
+            currentBpm = lvl.bpm;
+            levelNotes = JSON.parse(JSON.stringify(lvl.notes));
+            startSynthAudio(lvl.id);
+            startSession('play');
+        };
+
+        document.getElementById('start-editor-btn').addEventListener('click', () => {
+            currentBpm = parseInt(document.getElementById('edit-bpm').value) || 120;
+            startSession('editor');
+        });
+
+        const recBtn = document.getElementById('rec-btn');
+        recBtn.addEventListener('click', () => {
+            initAudioContext();
+            if (audioPlayer.src) {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    recBtn.textContent = 'Пауза';
+                    recBtn.classList.add('recording');
+                } else {
+                    audioPlayer.pause();
+                    recBtn.textContent = 'Запись';
+                    recBtn.classList.remove('recording');
+                }
+            } else {
+                if (!isSynthPlaying) {
+                    startSynthAudio(1);
+                    recBtn.textContent = 'Пауза';
+                    recBtn.classList.add('recording');
+                } else {
+                    stopSynthAudio();
+                    recBtn.textContent = 'Запись';
+                    recBtn.classList.remove('recording');
+                }
+            }
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            if (confirm('Очистить все ноты?')) {
+                levelNotes = [];
+                document.getElementById('score-val').textContent = '0';
+            }
+        });
+
+        document.getElementById('export-btn').addEventListener('click', () => {
+            const title = document.getElementById('edit-title').value || 'My Level';
+            levelNotes.sort((a, b) => a.time - b.time);
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+                title: title,
+                bpm: currentBpm,
+                notes: levelNotes
+            }, null, 2));
+            
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `${title.toLowerCase().replace(/\s+/g, '_')}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        });
+
+        document.getElementById('exit-btn').addEventListener('click', () => {
+            stopSynthAudio();
+            audioPlayer.pause();
+            isRunning = false;
+            document.getElementById('ui-panel').style.display = 'flex';
+            document.getElementById('editor-controls').style.display = 'none';
+            document.getElementById('hud').style.display = 'none';
+            document.getElementById('exit-btn').style.display = 'none';
+        });
+
         document.getElementById('play-json-input').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -279,10 +839,9 @@
                 try {
                     const data = JSON.parse(event.target.result);
                     levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false }));
-                    alert(`Карта "${data.title || 'Custom'}" загружена (${levelNotes.length} нот)!`);
-                } catch (err) {
-                    alert('Ошибка чтения JSON файла.');
-                }
+                    if (data.bpm) currentBpm = data.bpm;
+                    alert(`Карта "${data.title || 'Custom'}" загружена!`);
+                } catch (err) { alert('Ошибка чтения JSON файла.'); }
             };
             reader.readAsText(file);
         });
@@ -297,164 +856,227 @@
             if (file) audioPlayer.src = URL.createObjectURL(file);
         });
 
-        // --- СТАРТ ИГРЫ ---
-        document.getElementById('start-play-btn').addEventListener('click', () => {
+        document.getElementById('start-custom-play-btn').addEventListener('click', () => {
             if (!audioPlayer.src || levelNotes.length === 0) {
-                alert('Загрузите MP3 и JSON карту уровня!');
+                alert('Сначала загрузите MP3 и JSON карту!');
                 return;
             }
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
             startSession('play');
         });
 
-        // --- СТАРТ РЕДАКТОРА ---
-        document.getElementById('start-editor-btn').addEventListener('click', () => {
-            if (!audioPlayer.src) {
-                alert('Выберите MP3 файл для создания уровня!');
-                return;
-            }
-            levelNotes = [];
-            startSession('editor');
-        });
-
         function startSession(mode) {
-            currentMode = mode;
+            initAudioContext();
             document.getElementById('ui-panel').style.display = 'none';
             document.getElementById('hud').style.display = 'block';
+            document.getElementById('exit-btn').style.display = 'block';
 
             if (mode === 'editor') {
                 document.getElementById('editor-controls').style.display = 'flex';
-                document.getElementById('hud-title').textContent = 'Нот записано:';
+                document.getElementById('hud-title').textContent = 'Ноты:';
                 document.getElementById('combo-box').style.display = 'none';
-                document.getElementById('score-val').textContent = '0';
+                document.getElementById('score-val').textContent = levelNotes.length;
             } else {
                 document.getElementById('editor-controls').style.display = 'none';
                 document.getElementById('hud-title').textContent = 'Счет:';
                 document.getElementById('combo-box').style.display = 'block';
-                score = 0;
-                combo = 0;
-                updateHUD();
-                audioPlayer.currentTime = 0;
-                audioPlayer.play();
+                score = 0; combo = 0; updateHUD();
             }
 
             isRunning = true;
             requestAnimationFrame(gameLoop);
         }
 
-        // --- РЕДАКТОР: УПРАВЛЕНИЕ ---
-        document.getElementById('rec-btn').addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
+        function drawNoteShape(x, y, laneWidth, color, skin) {
+            const padding = 10;
+            const w = laneWidth - padding * 2;
+            const drawX = x + padding;
+
+            ctx.fillStyle = color;
+
+            if (skin === 'orb') {
+                ctx.beginPath();
+                ctx.arc(x + laneWidth / 2, y, 13, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.beginPath();
+                ctx.arc(x + laneWidth / 2 - 4, y - 4, 4, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (skin === 'diamond') {
+                ctx.beginPath();
+                ctx.moveTo(x + laneWidth / 2, y - 14);
+                ctx.lineTo(drawX + w, y);
+                ctx.lineTo(x + laneWidth / 2, y + 14);
+                ctx.lineTo(drawX, y);
+                ctx.closePath();
+                ctx.fill();
             } else {
-                audioPlayer.pause();
+                ctx.beginPath();
+                ctx.roundRect(drawX, y - 10, w, 20, 10);
+                ctx.fill();
             }
-        });
+        }
 
-        document.getElementById('clear-btn').addEventListener('click', () => {
-            if (confirm('Очистить все записанные ноты?')) {
-                levelNotes = [];
-                document.getElementById('score-val').textContent = '0';
-            }
-        });
-
-        document.getElementById('export-btn').addEventListener('click', () => {
-            audioPlayer.pause();
-            const exportData = {
-                title: document.getElementById('edit-title').value || 'My Track',
-                bpm: parseInt(document.getElementById('edit-bpm').value) || 120,
-                notes: levelNotes.sort((a, b) => a.time - b.time)
-            };
-
-            const jsonStr = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `${exportData.title.toLowerCase().replace(/\s+/g, '_')}_level.json`;
-            a.click();
-        });
-
-        // --- ОСНОВНОЙ ИГРОВОЙ ЦИКЛ ---
         function gameLoop() {
             if (!isRunning) return;
 
-            const currentTime = audioPlayer.currentTime;
+            const currentTime = getCurrentGameTime();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             const laneWidth = canvas.width / LANES_COUNT;
-            const hitLineY = canvas.height * 0.85;
+            const hitLineY = canvas.height * 0.82;
+            const scrollDuration = (140 / currentBpm) * 1.2;
 
-            // Отрисовка разметки дорожек
+            const themeCfg = THEMES_CONFIG[currentTheme];
+            const laneColors = themeCfg.laneColors;
+
             for (let i = 0; i < LANES_COUNT; i++) {
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+                ctx.strokeStyle = currentTheme === 'obsidian' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(i * laneWidth, 0);
                 ctx.lineTo(i * laneWidth, canvas.height);
                 ctx.stroke();
 
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                ctx.font = 'bold 20px sans-serif';
+                if (lanePressed[i]) {
+                    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    grad.addColorStop(0, 'rgba(255,255,255,0)');
+                    grad.addColorStop(1, laneColors[i] + '33');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(i * laneWidth, 0, laneWidth, canvas.height);
+                }
+
+                ctx.fillStyle = lanePressed[i] ? laneColors[i] : (currentTheme === 'obsidian' ? '#94a3b8' : '#64748b');
+                ctx.font = '700 16px Outfit';
                 ctx.textAlign = 'center';
-                ctx.fillText(LANE_NAMES[i], i * laneWidth + laneWidth / 2, hitLineY + 40);
+                ctx.fillText(LANE_NAMES[i], i * laneWidth + laneWidth / 2, hitLineY + 42);
             }
 
-            // Отрисовка целевой линии
-            ctx.strokeStyle = (currentMode === 'editor' && !audioPlayer.paused) ? '#ef4444' : '#6366f1';
-            ctx.lineWidth = 4;
+            ctx.strokeStyle = themeCfg.hitLine;
+            ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(0, hitLineY);
             ctx.lineTo(canvas.width, hitLineY);
             ctx.stroke();
 
-            // Отрисовка и обработка нот
+            if (currentMode === 'editor') {
+                for (let i = 0; i < LANES_COUNT; i++) {
+                    if (activeHoldStart[i] !== null) {
+                        const holdDur = currentTime - activeHoldStart[i];
+                        if (holdDur >= 0.3) {
+                            const yTail = hitLineY - ((activeHoldStart[i] + holdDur - currentTime) / scrollDuration) * hitLineY;
+                            const yHead = hitLineY - ((activeHoldStart[i] - currentTime) / scrollDuration) * hitLineY;
+                            drawHoldNote(i * laneWidth, yHead, yTail, laneWidth, laneColors[i]);
+                        }
+                    }
+                }
+            }
+
             levelNotes.forEach(note => {
                 const timeDiff = note.time - currentTime;
+                const dur = note.duration || 0;
 
-                if (currentMode === 'play') {
-                    if (timeDiff < -HIT_WINDOW && !note.missed && !note.hit) {
+                if (currentMode !== 'editor') {
+                    if (timeDiff + dur < -HIT_WINDOW && !note.missed && !note.hit) {
                         note.missed = true;
                         combo = 0;
                         updateHUD();
                         showFeedback('MISS', '#ef4444');
+                        playSFX('miss');
+                    }
+
+                    if (note.holding) {
+                        spawnParticles(note.lane * laneWidth + laneWidth / 2, hitLineY, laneColors[note.lane]);
+                        score += 2;
+                        updateHUD();
+
+                        if (currentTime >= note.time + note.duration) {
+                            note.holding = false;
+                            note.hit = true;
+                            score += 200;
+                            combo++;
+                            updateHUD();
+                            showFeedback('PERFECT', '#10b981');
+                            playSFX('perfect');
+                        }
                     }
                 }
 
-                // Визуализация падающих нот
-                if (timeDiff <= SCROLL_SPEED && timeDiff >= -HIT_WINDOW) {
-                    if (currentMode === 'play' && note.hit) return;
+                if (currentMode !== 'editor' && note.hit) return;
 
-                    const progress = (SCROLL_SPEED - timeDiff) / SCROLL_SPEED;
-                    const y = progress * hitLineY;
-                    const x = note.lane * laneWidth;
+                if (timeDiff <= scrollDuration && (timeDiff + dur) >= -HIT_WINDOW) {
+                    const yHead = hitLineY - (timeDiff / scrollDuration) * hitLineY;
 
-                    ctx.fillStyle = LANE_COLORS[note.lane];
-                    ctx.beginPath();
-                    ctx.roundRect(x + 5, y - 15, laneWidth - 10, 20, 6);
-                    ctx.fill();
+                    if (dur > 0) {
+                        const yTail = hitLineY - ((timeDiff + dur) / scrollDuration) * hitLineY;
+                        drawHoldNote(note.lane * laneWidth, yHead, yTail, laneWidth, laneColors[note.lane]);
+                    } else {
+                        drawNoteShape(note.lane * laneWidth, yHead, laneWidth, laneColors[note.lane], currentSkin);
+                    }
                 }
             });
 
+            updateAndDrawParticles();
             requestAnimationFrame(gameLoop);
         }
 
-        // --- ОБРАБОТКА НАЖАТИЙ ---
-        function handleInput(laneIndex) {
-            if (!isRunning) return;
+        function drawHoldNote(x, yHead, yTail, laneWidth, color) {
+            const padding = 10;
+            const width = laneWidth - padding * 2;
+            const drawX = x + padding;
 
-            const currentTime = audioPlayer.currentTime;
+            ctx.fillStyle = color + '33';
+            ctx.fillRect(drawX + width * 0.3, yTail, width * 0.4, yHead - yTail);
+
+            drawNoteShape(x, yHead, laneWidth, color, currentSkin);
+            
+            ctx.fillStyle = color;
+            ctx.fillRect(drawX + width * 0.2, yTail - 3, width * 0.6, 6);
+        }
+
+        function spawnParticles(x, y, color) {
+            for (let i = 0; i < 2; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4 - 1,
+                    color: color,
+                    size: Math.random() * 3 + 2,
+                    alpha: 1
+                });
+            }
+        }
+
+        function updateAndDrawParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function handlePressStart(laneIndex) {
+            if (!isRunning) return;
+            lanePressed[laneIndex] = true;
+            const currentTime = getCurrentGameTime();
 
             if (currentMode === 'editor') {
-                // В режиме редактора любое нажатие добавляет ноту на текущей секунде
-                if (!audioPlayer.paused) {
-                    levelNotes.push({
-                        time: parseFloat(currentTime.toFixed(3)),
-                        lane: laneIndex
-                    });
-                    document.getElementById('score-val').textContent = levelNotes.length;
-                    showFeedback('REC', '#10b981');
-                }
+                activeHoldStart[laneIndex] = currentTime;
+                playSFX('great');
             } else {
-                // В режиме игры проверяем точность попадания
                 const targetNote = levelNotes.find(n => 
                     n.lane === laneIndex && 
                     !n.hit && 
@@ -463,17 +1085,70 @@
                 );
 
                 if (targetNote) {
-                    targetNote.hit = true;
                     const diff = Math.abs(targetNote.time - currentTime);
 
-                    if (diff < 0.05) {
-                        score += 300; combo++; showFeedback('PERFECT', '#22c55e');
-                    } else if (diff < 0.1) {
-                        score += 100; combo++; showFeedback('GREAT', '#3b82f6');
+                    if (targetNote.duration > 0) {
+                        targetNote.holding = true;
+                        showFeedback('HOLD', THEMES_CONFIG[currentTheme].laneColors[laneIndex]);
                     } else {
-                        score += 50; combo = 0; showFeedback('GOOD', '#eab308');
+                        targetNote.hit = true;
+                        if (diff < 0.05) { 
+                            score += 300; combo++; 
+                            showFeedback('PERFECT', '#10b981'); 
+                            playSFX('perfect'); 
+                        } else if (diff < 0.1) { 
+                            score += 100; combo++; 
+                            showFeedback('GREAT', '#3b82f6'); 
+                            playSFX('great'); 
+                        } else { 
+                            score += 50; combo = 0; 
+                            showFeedback('GOOD', '#f59e0b'); 
+                            playSFX('good'); 
+                        }
+                        
+                        const laneWidth = canvas.width / LANES_COUNT;
+                        spawnParticles(laneIndex * laneWidth + laneWidth / 2, canvas.height * 0.82, THEMES_CONFIG[currentTheme].laneColors[laneIndex]);
+                        updateHUD();
                     }
-                    updateHUD();
+                } else {
+                    playSFX('miss');
+                }
+            }
+        }
+
+        function handlePressEnd(laneIndex) {
+            if (!isRunning) return;
+            lanePressed[laneIndex] = false;
+            const currentTime = getCurrentGameTime();
+
+            if (currentMode === 'editor') {
+                if (activeHoldStart[laneIndex] !== null) {
+                    const startTime = activeHoldStart[laneIndex];
+                    let duration = currentTime - startTime;
+
+                    if (duration < 0.3) duration = 0;
+
+                    levelNotes.push({
+                        time: parseFloat(startTime.toFixed(3)),
+                        duration: parseFloat(duration.toFixed(3)),
+                        lane: laneIndex
+                    });
+
+                    document.getElementById('score-val').textContent = levelNotes.length;
+                    showFeedback(duration > 0 ? 'HOLD REC' : 'TAP REC', '#10b981');
+                    activeHoldStart[laneIndex] = null;
+                }
+            } else {
+                const holdingNote = levelNotes.find(n => n.lane === laneIndex && n.holding);
+                if (holdingNote) {
+                    holdingNote.holding = false;
+                    if (currentTime < holdingNote.time + holdingNote.duration - 0.1) {
+                        holdingNote.missed = true;
+                        combo = 0;
+                        updateHUD();
+                        showFeedback('MISS', '#ef4444');
+                        playSFX('miss');
+                    }
                 }
             }
         }
@@ -482,12 +1157,12 @@
             hitFeedback.textContent = text;
             hitFeedback.style.color = color;
             hitFeedback.style.opacity = '1';
-            hitFeedback.style.transform = 'translate(-50%, -60%) scale(1.1)';
+            hitFeedback.style.transform = 'translate(-50%, -60%) scale(1.15)';
             
             setTimeout(() => {
                 hitFeedback.style.opacity = '0';
-                hitFeedback.style.transform = 'translate(-50%, -50%) scale(1)';
-            }, 120);
+                hitFeedback.style.transform = 'translate(-50%, -50%) scale(0.9)';
+            }, 140);
         }
 
         function updateHUD() {
@@ -495,14 +1170,17 @@
             document.getElementById('combo-val').textContent = combo;
         }
 
-        // Управление ПК
         window.addEventListener('keydown', (e) => {
             if (e.repeat) return;
             const laneIndex = KEYS.indexOf(e.code);
-            if (laneIndex !== -1) handleInput(laneIndex);
+            if (laneIndex !== -1) handlePressStart(laneIndex);
         });
 
-        // Управление Смартфоном / Мышью
+        window.addEventListener('keyup', (e) => {
+            const laneIndex = KEYS.indexOf(e.code);
+            if (laneIndex !== -1) handlePressEnd(laneIndex);
+        });
+
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const rect = canvas.getBoundingClientRect();
@@ -510,22 +1188,22 @@
 
             for (let i = 0; i < e.changedTouches.length; i++) {
                 const touch = e.changedTouches[i];
-                const touchX = touch.clientX - rect.left;
-                const laneIndex = Math.floor(touchX / laneWidth);
-                if (laneIndex >= 0 && laneIndex < LANES_COUNT) {
-                    handleInput(laneIndex);
-                }
+                const laneIndex = Math.floor((touch.clientX - rect.left) / laneWidth);
+                if (laneIndex >= 0 && laneIndex < LANES_COUNT) handlePressStart(laneIndex);
             }
         }, { passive: false });
 
-        canvas.addEventListener('mousedown', (e) => {
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
             const rect = canvas.getBoundingClientRect();
             const laneWidth = rect.width / LANES_COUNT;
-            const laneIndex = Math.floor((e.clientX - rect.left) / laneWidth);
-            if (laneIndex >= 0 && laneIndex < LANES_COUNT) {
-                handleInput(laneIndex);
+
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                const laneIndex = Math.floor((touch.clientX - rect.left) / laneWidth);
+                if (laneIndex >= 0 && laneIndex < LANES_COUNT) handlePressEnd(laneIndex);
             }
-        });
+        }, { passive: false });
     </script>
 </body>
 </html>
