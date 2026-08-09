@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Rhythm Game & Editor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0f111a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #ui-panel {
+            position: absolute;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(26, 29, 45, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #2e3450;
+            z-index: 10;
+            max-width: 90vw;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            background: #1e2338;
+            border: 1px solid #2e3450;
+            color: #8a94b8;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tab-btn.active {
+            background: #6366f1;
+            color: #fff;
+            border-color: #6366f1;
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: #8a94b8;
+        }
+
+        input[type="file"], input[type="text"], input[type="number"] {
+            font-size: 0.85rem;
+            color: #fff;
+            background: #161927;
+            border: 1px solid #2e3450;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        button.action-btn {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border: none;
+            color: white;
+            padding: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button.action-btn:active {
+            transform: scale(0.98);
+        }
+
+        button.secondary-btn {
+            background: #334155;
+        }
+
+        #editor-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 10px;
+            background: rgba(26, 29, 45, 0.95);
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid #2e3450;
+            z-index: 10;
+        }
+
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
+            z-index: 5;
+            display: none;
+        }
+
+        .score-text { font-size: 1.4rem; font-weight: bold; }
+        .combo-text { font-size: 1rem; color: #38bdf8; }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background: #161927;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+            border-left: 2px solid #2e3450;
+            border-right: 2px solid #2e3450;
+            overflow: hidden;
+        }
+
+        canvas { width: 100%; height: 100%; display: block; }
+
+        #hit-feedback {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 900;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s, transform 0.1s;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="audio-player"></audio>
+
+    <div id="ui-panel">
+        <h2 style="text-align: center; margin-bottom: 5px;">Rhythm Game Studio</h2>
+        
+        <div class="mode-tabs">
+            <button class="tab-btn active" onclick="switchTab('play')">Игра</button>
+            <button class="tab-btn" onclick="switchTab('editor')">Редактор</button>
+        </div>
+
+        <!-- Вкладка ИГРА -->
+        <div id="tab-play" class="tab-content active">
+            <div class="input-group">
+                <label>1. Аудиозапись (.mp3, .wav):</label>
+                <input type="file" id="play-audio-input" accept="audio/*">
+            </div>
+            <div class="input-group">
+                <label>2. Карта уровня (.json):</label>
+                <input type="file" id="play-json-input" accept=".json">
+            </div>
+            <button class="action-btn" id="start-play-btn">Играть</button>
+        </div>
+
+        <!-- Вкладка РЕДАКТОР -->
+        <div id="tab-editor" class="tab-content">
+            <div class="input-group">
+                <label>1. Название трека:</label>
+                <input type="text" id="edit-title" value="My Custom Level">
+            </div>
+            <div class="input-group">
+                <label>2. BPM (темп):</label>
+                <input type="number" id="edit-bpm" value="120">
+            </div>
+            <div class="input-group">
+                <label>3. Выберите музыку (.mp3, .wav):</label>
+                <input type="file" id="edit-audio-input" accept="audio/*">
+            </div>
+            <button class="action-btn" id="start-editor-btn">Открыть редактор</button>
+        </div>
+    </div>
+
+    <!-- Панель управления во время редактирования -->
+    <div id="editor-controls">
+        <button class="action-btn" id="rec-btn">Запись (Старт/Пауза)</button>
+        <button class="action-btn secondary-btn" id="clear-btn">Сброс</button>
+        <button class="action-btn" id="export-btn" style="background: linear-gradient(135deg, #10b981, #059669);">Скачать JSON</button>
+    </div>
+
+    <div id="hud">
+        <div class="score-text"><span id="hud-title">Счет:</span> <span id="score-val">0</span></div>
+        <div class="combo-text" id="combo-box">Комбо: <span id="combo-val">0</span>x</div>
+    </div>
+
+    <div id="game-container">
+        <div id="hit-feedback">PERFECT</div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const hitFeedback = document.getElementById('hit-feedback');
+        const audioPlayer = document.getElementById('audio-player');
+
+        let currentMode = 'play'; // 'play' или 'editor'
+        let isRunning = false;
+
+        let score = 0;
+        let combo = 0;
+
+        const LANES_COUNT = 4;
+        const KEYS = ['KeyZ', 'KeyX', 'KeyC', 'KeyV'];
+        const LANE_COLORS = ['#f43f5e', '#3b82f6', '#3b82f6', '#f43f5e'];
+        const LANE_NAMES = ['Z', 'X', 'C', 'V'];
+
+        const SCROLL_SPEED = 1.2; // Время падения ноты (сек)
+        const HIT_WINDOW = 0.15;  // Окно попадания (сек)
+
+        let levelNotes = []; 
+
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function switchTab(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            if (mode === 'play') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('tab-play').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('tab-editor').classList.add('active');
+            }
+        }
+
+        // --- ЗАГРУЗКА ФАЙЛОВ ДЛЯ ИГРЫ ---
+        document.getElementById('play-json-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false }));
+                    alert(`Карта "${data.title || 'Custom'}" загружена (${levelNotes.length} нот)!`);
+                } catch (err) {
+                    alert('Ошибка чтения JSON файла.');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('play-audio-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) audioPlayer.src = URL.createObjectURL(file);
+        });
+
+        document.getElementById('edit-audio-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) audioPlayer.src = URL.createObjectURL(file);
+        });
+
+        // --- СТАРТ ИГРЫ ---
+        document.getElementById('start-play-btn').addEventListener('click', () => {
+            if (!audioPlayer.src || levelNotes.length === 0) {
+                alert('Загрузите MP3 и JSON карту уровня!');
+                return;
+            }
+            startSession('play');
+        });
+
+        // --- СТАРТ РЕДАКТОРА ---
+        document.getElementById('start-editor-btn').addEventListener('click', () => {
+            if (!audioPlayer.src) {
+                alert('Выберите MP3 файл для создания уровня!');
+                return;
+            }
+            levelNotes = [];
+            startSession('editor');
+        });
+
+        function startSession(mode) {
+            currentMode = mode;
+            document.getElementById('ui-panel').style.display = 'none';
+            document.getElementById('hud').style.display = 'block';
+
+            if (mode === 'editor') {
+                document.getElementById('editor-controls').style.display = 'flex';
+                document.getElementById('hud-title').textContent = 'Нот записано:';
+                document.getElementById('combo-box').style.display = 'none';
+                document.getElementById('score-val').textContent = '0';
+            } else {
+                document.getElementById('editor-controls').style.display = 'none';
+                document.getElementById('hud-title').textContent = 'Счет:';
+                document.getElementById('combo-box').style.display = 'block';
+                score = 0;
+                combo = 0;
+                updateHUD();
+                audioPlayer.currentTime = 0;
+                audioPlayer.play();
+            }
+
+            isRunning = true;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- РЕДАКТОР: УПРАВЛЕНИЕ ---
+        document.getElementById('rec-btn').addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            if (confirm('Очистить все записанные ноты?')) {
+                levelNotes = [];
+                document.getElementById('score-val').textContent = '0';
+            }
+        });
+
+        document.getElementById('export-btn').addEventListener('click', () => {
+            audioPlayer.pause();
+            const exportData = {
+                title: document.getElementById('edit-title').value || 'My Track',
+                bpm: parseInt(document.getElementById('edit-bpm').value) || 120,
+                notes: levelNotes.sort((a, b) => a.time - b.time)
+            };
+
+            const jsonStr = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${exportData.title.toLowerCase().replace(/\s+/g, '_')}_level.json`;
+            a.click();
+        });
+
+        // --- ОСНОВНОЙ ИГРОВОЙ ЦИКЛ ---
+        function gameLoop() {
+            if (!isRunning) return;
+
+            const currentTime = audioPlayer.currentTime;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const laneWidth = canvas.width / LANES_COUNT;
+            const hitLineY = canvas.height * 0.85;
+
+            // Отрисовка разметки дорожек
+            for (let i = 0; i < LANES_COUNT; i++) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(i * laneWidth, 0);
+                ctx.lineTo(i * laneWidth, canvas.height);
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.font = 'bold 20px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(LANE_NAMES[i], i * laneWidth + laneWidth / 2, hitLineY + 40);
+            }
+
+            // Отрисовка целевой линии
+            ctx.strokeStyle = (currentMode === 'editor' && !audioPlayer.paused) ? '#ef4444' : '#6366f1';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, hitLineY);
+            ctx.lineTo(canvas.width, hitLineY);
+            ctx.stroke();
+
+            // Отрисовка и обработка нот
+            levelNotes.forEach(note => {
+                const timeDiff = note.time - currentTime;
+
+                if (currentMode === 'play') {
+                    if (timeDiff < -HIT_WINDOW && !note.missed && !note.hit) {
+                        note.missed = true;
+                        combo = 0;
+                        updateHUD();
+                        showFeedback('MISS', '#ef4444');
+                    }
+                }
+
+                // Визуализация падающих нот
+                if (timeDiff <= SCROLL_SPEED && timeDiff >= -HIT_WINDOW) {
+                    if (currentMode === 'play' && note.hit) return;
+
+                    const progress = (SCROLL_SPEED - timeDiff) / SCROLL_SPEED;
+                    const y = progress * hitLineY;
+                    const x = note.lane * laneWidth;
+
+                    ctx.fillStyle = LANE_COLORS[note.lane];
+                    ctx.beginPath();
+                    ctx.roundRect(x + 5, y - 15, laneWidth - 10, 20, 6);
+                    ctx.fill();
+                }
+            });
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- ОБРАБОТКА НАЖАТИЙ ---
+        function handleInput(laneIndex) {
+            if (!isRunning) return;
+
+            const currentTime = audioPlayer.currentTime;
+
+            if (currentMode === 'editor') {
+                // В режиме редактора любое нажатие добавляет ноту на текущей секунде
+                if (!audioPlayer.paused) {
+                    levelNotes.push({
+                        time: parseFloat(currentTime.toFixed(3)),
+                        lane: laneIndex
+                    });
+                    document.getElementById('score-val').textContent = levelNotes.length;
+                    showFeedback('REC', '#10b981');
+                }
+            } else {
+                // В режиме игры проверяем точность попадания
+                const targetNote = levelNotes.find(n => 
+                    n.lane === laneIndex && 
+                    !n.hit && 
+                    !n.missed && 
+                    Math.abs(n.time - currentTime) <= HIT_WINDOW
+                );
+
+                if (targetNote) {
+                    targetNote.hit = true;
+                    const diff = Math.abs(targetNote.time - currentTime);
+
+                    if (diff < 0.05) {
+                        score += 300; combo++; showFeedback('PERFECT', '#22c55e');
+                    } else if (diff < 0.1) {
+                        score += 100; combo++; showFeedback('GREAT', '#3b82f6');
+                    } else {
+                        score += 50; combo = 0; showFeedback('GOOD', '#eab308');
+                    }
+                    updateHUD();
+                }
+            }
+        }
+
+        function showFeedback(text, color) {
+            hitFeedback.textContent = text;
+            hitFeedback.style.color = color;
+            hitFeedback.style.opacity = '1';
+            hitFeedback.style.transform = 'translate(-50%, -60%) scale(1.1)';
+            
+            setTimeout(() => {
+                hitFeedback.style.opacity = '0';
+                hitFeedback.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 120);
+        }
+
+        function updateHUD() {
+            document.getElementById('score-val').textContent = score;
+            document.getElementById('combo-val').textContent = combo;
+        }
+
+        // Управление ПК
+        window.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
+            const laneIndex = KEYS.indexOf(e.code);
+            if (laneIndex !== -1) handleInput(laneIndex);
+        });
+
+        // Управление Смартфоном / Мышью
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const laneWidth = rect.width / LANES_COUNT;
+
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                const touchX = touch.clientX - rect.left;
+                const laneIndex = Math.floor(touchX / laneWidth);
+                if (laneIndex >= 0 && laneIndex < LANES_COUNT) {
+                    handleInput(laneIndex);
+                }
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const laneWidth = rect.width / LANES_COUNT;
+            const laneIndex = Math.floor((e.clientX - rect.left) / laneWidth);
+            if (laneIndex >= 0 && laneIndex < LANES_COUNT) {
+                handleInput(laneIndex);
+            }
+        });
+    </script>
+</body>
+</html>
