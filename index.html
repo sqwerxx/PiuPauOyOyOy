@@ -603,7 +603,7 @@
             <button class="tab-btn" onclick="switchTab('style')">Вид</button>
         </div>
 
-        <!-- ТАБ 1: Официальные Уровни (Относительные пути) -->
+        <!-- ТАБ 1: Официальные Уровни -->
         <div id="tab-official" class="tab-content active">
             <div class="official-levels" id="official-levels-list"></div>
         </div>
@@ -719,6 +719,9 @@
         let currentNoteSkin = 'flat-rect';
         let currentLaneStyle = 'lines';
 
+        let currentLoadedAudioFile = null; 
+        let currentAudioBase64 = '';
+
         const LANES_COUNT = 4;
         const KEYS = ['KeyZ', 'KeyX', 'KeyC', 'KeyV'];
         const LANE_NAMES = ['Z', 'X', 'C', 'V'];
@@ -733,7 +736,7 @@
         let synthStartTime = 0;
 
         /* =========================================================
-           ОФИЦИАЛЬНЫЕ УРОВНИ (Просто указываем путь к файлу рядом)
+           ОФИЦИАЛЬНЫЕ УРОВНИ
            ========================================================= */
         const OFFICIAL_LEVELS = [
             { 
@@ -835,7 +838,6 @@
         }
         renderOfficialLevels();
 
-        // Загрузка файла уровня по относительному пути прямо из папки
         window.loadAndPlayOfficial = async function(filePath) {
             try {
                 const response = await fetch(filePath);
@@ -855,16 +857,17 @@
                 levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false, holding: false }));
             }
             
-            // ИСПРАВЛЕНИЕ: Безопасное присвоение audioData (не ставит src в "", если пусто)
             if (data.audioData && typeof data.audioData === 'string' && data.audioData.trim() !== '') {
                 audioPlayer.src = data.audioData;
                 audioPlayer.load();
+                currentAudioBase64 = data.audioData;
             } else {
                 audioPlayer.removeAttribute('src');
+                currentAudioBase64 = '';
             }
         }
 
-        /* === DRAG & DROP И ЗАГРУЗКА СВОЕГО ФАЙЛА === */
+        /* === DRAG & DROP И ЗАГРУЗКА ФАЙЛОВ === */
         function setupDropzone(dropzoneId, inputId, textId, onFileSelected) {
             const dropzone = document.getElementById(dropzoneId);
             const input = document.getElementById(inputId);
@@ -913,6 +916,7 @@
         });
 
         setupDropzone('audio-dropzone', 'edit-audio-input', 'audio-filename', (file) => {
+            currentLoadedAudioFile = file;
             audioPlayer.src = URL.createObjectURL(file);
         });
 
@@ -921,6 +925,7 @@
             startSessionWithCountdown('play');
         });
 
+        /* === ВШИВАНИЕ АУДИО И СКАЧИВАНИЕ .RS === */
         document.getElementById('export-btn').addEventListener('click', async () => {
             const title = document.getElementById('edit-title').value || 'My Level';
             const quantizeVal = parseInt(document.getElementById('edit-quantize').value) || 8;
@@ -929,13 +934,15 @@
             levelNotes.sort((a, b) => a.time - b.time);
 
             let audioDataStr = "";
-            const audioInput = document.getElementById('edit-audio-input');
-            if (audioInput.files && audioInput.files[0]) {
+            
+            if (currentLoadedAudioFile) {
                 audioDataStr = await new Promise((resolve) => {
                     const r = new FileReader();
                     r.onload = e => resolve(e.target.result);
-                    r.readAsDataURL(audioInput.files[0]);
+                    r.readAsDataURL(currentLoadedAudioFile);
                 });
+            } else if (currentAudioBase64) {
+                audioDataStr = currentAudioBase64;
             } else if (audioPlayer.getAttribute('src') && audioPlayer.src.startsWith('data:')) {
                 audioDataStr = audioPlayer.src;
             }
@@ -977,7 +984,6 @@
 
             let count = 3;
             countdownNum.textContent = count;
-            // Перезапуск анимации текста
             countdownNum.style.animation = 'none';
             void countdownNum.offsetWidth;
             countdownNum.style.animation = 'pulseCount 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite';
@@ -1112,13 +1118,12 @@
                 toggleUIElement('editor-controls', false);
                 updateHUD();
                 
-                // ИСПРАВЛЕНИЕ: Безопасный запуск трека с фолбэком на встроенный синтезатор
                 if (audioPlayer.hasAttribute('src')) {
                     audioPlayer.currentTime = 0;
                     const playPromise = audioPlayer.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(err => {
-                            console.warn("Аудиофайл не запустился или отсутствует, включается встроенный синтезатор:", err);
+                            console.warn("Аудиофайл не запустился или отсутствует, включается синтезатор:", err);
                             startSynthAudio();
                         });
                     }
@@ -1415,7 +1420,7 @@
             hitFeedback.textContent = text;
             hitFeedback.style.color = color;
             hitFeedback.classList.remove('hit-pop-anim');
-            void hitFeedback.offsetWidth; // Рестарт CSS-анимации
+            void hitFeedback.offsetWidth;
             hitFeedback.classList.add('hit-pop-anim');
         }
 
