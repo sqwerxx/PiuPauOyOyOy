@@ -701,6 +701,7 @@
         const ctx = canvas.getContext('2d', { alpha: false });
         const hitFeedback = document.getElementById('hit-feedback');
         const audioPlayer = document.getElementById('audio-player');
+        const recBtn = document.getElementById('rec-btn');
 
         let currentMode = 'official'; 
         let isRunning = false;
@@ -736,9 +737,6 @@
         let isSynthPlaying = false;
         let synthStartTime = 0;
 
-        /* =========================================================
-           УНИВЕРСАЛЬНАЯ КОНВЕРТАЦИЯ BASE64 В BLOB (ДЛЯ ВСЕХ БРАУЗЕРОВ)
-           ========================================================= */
         function dataURLToBlobUrl(dataUrl) {
             if (!dataUrl || typeof dataUrl !== 'string') return '';
             if (!dataUrl.startsWith('data:')) return dataUrl;
@@ -760,9 +758,6 @@
             }
         }
 
-        /* =========================================================
-           ОФИЦИАЛЬНЫЕ УРОВНИ
-           ========================================================= */
         const OFFICIAL_LEVELS = [
             { 
                 id: 1, 
@@ -799,20 +794,6 @@
         function initAudioContext() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
-        }
-
-        /* Разблокировка браузерного аудио при первом клике */
-        function unlockAudio() {
-            initAudioContext();
-            if (audioPlayer.src) {
-                const playPromise = audioPlayer.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        audioPlayer.pause();
-                        audioPlayer.currentTime = 0;
-                    }).catch(e => console.log("Предзапуск аудио ограничен:", e));
-                }
-            }
         }
 
         function playSFX(type) {
@@ -912,7 +893,6 @@
             }
         }
 
-        /* === DRAG & DROP И ЗАГРУЗКА ФАЙЛОВ === */
         function setupDropzone(dropzoneId, inputId, textId, onFileSelected) {
             const dropzone = document.getElementById(dropzoneId);
             const input = document.getElementById(inputId);
@@ -975,7 +955,6 @@
             startSessionWithCountdown('play');
         });
 
-        /* === ВШИВАНИЕ АУДИО И СКАЧИВАНИЕ .RS === */
         document.getElementById('export-btn').addEventListener('click', async () => {
             const title = document.getElementById('edit-title').value || 'My Level';
             const quantizeVal = parseInt(document.getElementById('edit-quantize').value) || 8;
@@ -1012,7 +991,6 @@
             dlAnchor.remove();
         });
 
-        /* === УПРАВЛЕНИЕ АНИМАЦИЯМИ ОКЕН И ИНТЕРФЕЙСА === */
         function toggleUIElement(elementId, show) {
             const el = document.getElementById(elementId);
             if (show) {
@@ -1022,8 +1000,20 @@
             }
         }
 
+        /* ЗАПУСК С ТИХИМ ПРАЙМИНГОМ ЗВУКА */
         function startSessionWithCountdown(mode, onComplete) {
-            unlockAudio();
+            initAudioContext();
+
+            // Принудительный старт без звука на клике (обход Autoplay restriction)
+            const hasAudio = audioPlayer.src && audioPlayer.src !== '' && audioPlayer.src !== window.location.href;
+            if (hasAudio) {
+                audioPlayer.muted = true;
+                const p = audioPlayer.play();
+                if (p !== undefined) {
+                    p.catch(e => console.log("Прайминг звука авторизован браузером:", e));
+                }
+            }
+
             toggleUIElement('ui-panel', false);
 
             const countdownOverlay = document.getElementById('countdown-overlay');
@@ -1049,6 +1039,17 @@
                 } else {
                     clearInterval(timer);
                     toggleUIElement('countdown-overlay', false);
+
+                    if (hasAudio) {
+                        audioPlayer.currentTime = 0;
+                        audioPlayer.muted = false;
+                        audioPlayer.volume = 1;
+                        audioPlayer.play().catch(e => {
+                            console.warn("Сбой трека, включаем синтезатор:", e);
+                            startSynthAudio();
+                        });
+                    }
+
                     if (onComplete) onComplete();
                     else startSession(mode);
                 }
@@ -1094,38 +1095,44 @@
         document.getElementById('start-editor-btn').addEventListener('click', () => {
             currentBpm = parseInt(document.getElementById('edit-bpm').value) || 120;
             currentTimeSig = document.getElementById('edit-timesig').value || '4/4';
+
+            // Очищаем старый официальный трек, если пользователь не выбрал новый аудиофайл в самом редакторе
+            if (!currentLoadedAudioFile && !currentAudioBase64) {
+                audioPlayer.removeAttribute('src');
+                if (currentAudioBlobUrl) {
+                    URL.revokeObjectURL(currentAudioBlobUrl);
+                    currentAudioBlobUrl = null;
+                }
+            }
+
             startSession('editor');
         });
 
-        const recBtn = document.getElementById('rec-btn');
+        /* ПРЯМОЙ СИНХРОННЫЙ КЛИК ДЛЯ РЕДАКТОРА (БЕЗ ЗАДЕРЖКИ) */
         recBtn.addEventListener('click', () => {
-            unlockAudio();
-            
-            const togglePlay = () => {
-                const hasAudio = audioPlayer.hasAttribute('src');
+            initAudioContext();
+            const hasAudio = audioPlayer.src && audioPlayer.src !== '' && audioPlayer.src !== window.location.href;
+            const isPlaying = (!audioPlayer.paused && hasAudio) || isSynthPlaying;
+
+            if (isPlaying) {
+                if (hasAudio) audioPlayer.pause();
+                stopSynthAudio();
+                recBtn.textContent = 'Запись';
+            } else {
                 if (hasAudio) {
-                    if (audioPlayer.paused) {
-                        audioPlayer.play().catch(() => startSynthAudio());
+                    audioPlayer.muted = false;
+                    audioPlayer.volume = 1;
+                    audioPlayer.play().then(() => {
                         recBtn.textContent = 'Пауза';
-                    } else {
-                        audioPlayer.pause();
-                        recBtn.textContent = 'Запись';
-                    }
-                } else {
-                    if (!isSynthPlaying) {
+                    }).catch(err => {
+                        console.warn("Ошибка запуска звука, включаем синтезатор:", err);
                         startSynthAudio();
                         recBtn.textContent = 'Пауза';
-                    } else {
-                        stopSynthAudio();
-                        recBtn.textContent = 'Запись';
-                    }
+                    });
+                } else {
+                    startSynthAudio();
+                    recBtn.textContent = 'Пауза';
                 }
-            };
-
-            if (audioPlayer.paused && !isSynthPlaying) {
-                startSessionWithCountdown('editor', togglePlay);
-            } else {
-                togglePlay();
             }
         });
 
@@ -1139,15 +1146,17 @@
         document.getElementById('exit-btn').addEventListener('click', () => {
             stopSynthAudio();
             audioPlayer.pause();
+            audioPlayer.currentTime = 0;
             isRunning = false;
             toggleUIElement('ui-panel', true);
             toggleUIElement('editor-controls', false);
             toggleUIElement('hud', false);
             toggleUIElement('exit-btn', false);
+            recBtn.textContent = 'Запись';
         });
 
         function startSession(mode) {
-            unlockAudio();
+            initAudioContext();
             toggleUIElement('hud', true);
             toggleUIElement('exit-btn', true);
 
@@ -1161,22 +1170,10 @@
                 document.getElementById('score-val').textContent = levelNotes.length;
                 document.getElementById('accuracy-val').textContent = '100.0%';
                 document.getElementById('combo-val').textContent = '0';
+                recBtn.textContent = 'Запись';
             } else {
                 toggleUIElement('editor-controls', false);
                 updateHUD();
-                
-                if (audioPlayer.hasAttribute('src')) {
-                    audioPlayer.currentTime = 0;
-                    const playPromise = audioPlayer.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(err => {
-                            console.warn("Аудиофайл не запустился, включается синтезатор:", err);
-                            startSynthAudio();
-                        });
-                    }
-                } else {
-                    startSynthAudio();
-                }
             }
 
             isRunning = true;
@@ -1234,7 +1231,6 @@
             document.getElementById('exit-btn').click();
         };
 
-        /* === ЦИКЛ ОТРИСОВКИ (60 FPS) === */
         function gameLoop() {
             if (!isRunning) return;
 
@@ -1247,7 +1243,6 @@
             const scrollDuration = (140 / currentBpm) * 1.2;
             const laneColors = ['#4f46e5', '#06b6d4', '#ec4899', '#8b5cf6'];
 
-            // Дорожки
             for (let i = 0; i < LANES_COUNT; i++) {
                 if (currentLaneStyle === 'columns') {
                     ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent';
@@ -1272,7 +1267,6 @@
                 ctx.fillText(LANE_NAMES[i], i * laneWidth + laneWidth / 2, hitLineY + 32);
             }
 
-            // Тактовые линии
             const beatsPerMeasure = currentTimeSig === '3/4' ? 3 : 4;
             const secPerBeat = 60 / currentBpm;
             const startBeat = Math.floor((currentTime - scrollDuration) / secPerBeat);
@@ -1293,7 +1287,6 @@
                 }
             }
 
-            // Линия попадания
             ctx.strokeStyle = '#6366f1';
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -1301,7 +1294,6 @@
             ctx.lineTo(canvas.width, hitLineY);
             ctx.stroke();
 
-            // Ноты
             levelNotes.forEach(note => {
                 const timeDiff = note.time - currentTime;
                 const dur = note.duration || 0;
@@ -1380,7 +1372,6 @@
             drawNoteSkin(x, yHead, laneWidth, color);
         }
 
-        /* === НАЖАТИЯ === */
         function handlePressStart(laneIndex) {
             if (!isRunning) return;
             lanePressed[laneIndex] = true;
