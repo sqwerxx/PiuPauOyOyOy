@@ -13,7 +13,7 @@
             --bg-main: #0b0f17;
             --panel-bg: #131b2e;
             --panel-border: rgba(255, 255, 255, 0.08);
-            --panel-border-hover: rgba(255, 255, 255, 0.16);
+            --panel-border-hover: rgba(255, 255, 255, 0.2);
             
             --text-primary: #f1f5f9;
             --text-secondary: #8e9bb0;
@@ -58,8 +58,8 @@
 
         /* === АНИМАЦИИ ПОЯВЛЕНИЯ / ИСЧЕЗНОВЕНИЯ === */
         .ui-animate {
-            transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
-                        transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
             pointer-events: auto;
@@ -67,12 +67,12 @@
 
         .ui-animate.hidden {
             opacity: 0;
-            transform: translate(-50%, -48%) scale(0.96);
+            transform: translate(-50%, -46%) scale(0.94);
             pointer-events: none;
         }
 
         .fade-overlay {
-            transition: opacity 0.2s ease;
+            transition: opacity 0.25s ease;
             opacity: 1;
             pointer-events: auto;
         }
@@ -99,7 +99,7 @@
             max-width: 92vw;
             max-height: 88vh;
             overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.05);
         }
 
         #ui-panel::-webkit-scrollbar { width: 4px; }
@@ -145,22 +145,32 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 0.78rem;
-            transition: background 0.15s ease, color 0.15s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             font-family: inherit;
         }
 
-        .tab-btn:hover { color: var(--text-primary); }
+        .tab-btn:hover { 
+            color: var(--text-primary); 
+            background: rgba(255, 255, 255, 0.03);
+        }
 
         .tab-btn.active {
             background: var(--card-bg);
             color: var(--text-primary);
             border: 1px solid var(--panel-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .tab-content {
             display: none;
             flex-direction: column;
             gap: 14px;
+            animation: fadeInTab 0.22s ease forwards;
+        }
+
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .tab-content.active { display: flex; }
@@ -176,12 +186,14 @@
             border: 1px solid var(--panel-border);
             padding: 12px 14px;
             border-radius: var(--radius-md);
-            transition: border-color 0.15s ease, background 0.15s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .level-card:hover {
             border-color: var(--panel-border-hover);
             background: #1c2842;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
         }
 
         .level-left {
@@ -201,6 +213,11 @@
             justify-content: center;
             font-size: 1.2rem;
             overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .level-card:hover .level-cover {
+            transform: scale(1.05);
         }
 
         .level-cover img {
@@ -249,7 +266,7 @@
             padding: 20px 14px;
             text-align: center;
             cursor: pointer;
-            transition: border-color 0.15s ease, background 0.15s ease;
+            transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -259,6 +276,7 @@
         .dropzone:hover, .dropzone.drag-over {
             border-color: var(--accent);
             background: var(--accent-light);
+            transform: scale(1.01);
         }
 
         .dropzone-title { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
@@ -277,10 +295,13 @@
             border-radius: var(--radius-sm);
             outline: none;
             font-family: inherit;
-            transition: border-color 0.15s ease;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
-        input:focus, select:focus { border-color: var(--accent); }
+        input:focus, select:focus { 
+            border-color: var(--accent); 
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
 
         .btn {
             background: var(--accent);
@@ -291,16 +312,35 @@
             font-weight: 700;
             border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: background 0.15s ease, opacity 0.15s ease;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
             text-align: center;
             font-family: inherit;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
         }
 
-        .btn:hover { background: var(--accent-hover); }
-        .btn:active { opacity: 0.85; }
+        .btn:hover { 
+            background: var(--accent-hover); 
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn:active { 
+            transform: scale(0.97); 
+            opacity: 0.9; 
+        }
+
         .btn-small { padding: 7px 12px; font-size: 0.78rem; }
-        .btn-secondary { background: var(--card-bg); border: 1px solid var(--panel-border); color: var(--text-primary); }
-        .btn-secondary:hover { border-color: var(--panel-border-hover); background: #202d4a; }
+        .btn-secondary { 
+            background: var(--card-bg); 
+            border: 1px solid var(--panel-border); 
+            color: var(--text-primary); 
+            box-shadow: none;
+        }
+        .btn-secondary:hover { 
+            border-color: var(--panel-border-hover); 
+            background: #202d4a; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
 
         /* ПАНЕЛЬ РЕДАКТОРА СНИЗУ */
         #editor-controls {
@@ -316,12 +356,12 @@
             border: 1px solid var(--panel-border);
             z-index: 20;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         #editor-controls.hidden {
             opacity: 0;
-            transform: translate(-50%, 15px);
+            transform: translate(-50%, 20px);
             pointer-events: none;
         }
 
@@ -339,10 +379,16 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 0.8rem;
-            transition: opacity 0.2s ease;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        #exit-btn.hidden { opacity: 0; pointer-events: none; }
+        #exit-btn:hover {
+            border-color: var(--panel-border-hover);
+            transform: translateY(-1px);
+        }
+
+        #exit-btn.hidden { opacity: 0; pointer-events: none; transform: translateY(-5px); }
 
         /* HUD ИГРЫ */
         #hud {
@@ -355,16 +401,17 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 2px;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
-        #hud.hidden { opacity: 0; }
+        #hud.hidden { opacity: 0; transform: translateY(-5px); }
 
         .hud-score {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 2rem;
             font-weight: 700;
             line-height: 1;
+            transition: transform 0.1s ease;
         }
 
         .hud-sub {
@@ -380,7 +427,7 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(11, 15, 23, 0.92);
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(8px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -390,10 +437,17 @@
 
         #countdown-number {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 6rem;
+            font-size: 6.5rem;
             font-weight: 700;
             color: var(--accent);
             line-height: 1;
+            animation: pulseCount 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+        }
+
+        @keyframes pulseCount {
+            0% { transform: scale(0.6); opacity: 0.3; }
+            50% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .results-card {
@@ -408,6 +462,13 @@
             align-items: center;
             gap: 16px;
             text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            animation: slideUpCard 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUpCard {
+            from { opacity: 0; transform: translateY(30px) scale(0.92); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .rank-badge {
@@ -415,11 +476,18 @@
             font-size: 4rem;
             font-weight: 700;
             line-height: 1;
+            animation: rankPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        .rank-S { color: var(--diff-medium); }
-        .rank-A { color: var(--diff-easy); }
-        .rank-B { color: var(--accent); }
+        @keyframes rankPop {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .rank-S { color: var(--diff-medium); text-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+        .rank-A { color: var(--diff-easy); text-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+        .rank-B { color: var(--accent); text-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
         .rank-C { color: #06b6d4; }
         .rank-D { color: var(--diff-expert); }
         .rank-F { color: var(--diff-hard); }
@@ -463,11 +531,21 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 700;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.08s ease;
+        }
+
+        .hit-pop-anim {
+            animation: hitFeedbackPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes hitFeedbackPop {
+            0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
     </style>
 </head>
@@ -776,7 +854,14 @@
             if (data.notes) {
                 levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false, holding: false }));
             }
-            audioPlayer.src = data.audioData || "";
+            
+            // ИСПРАВЛЕНИЕ: Безопасное присвоение audioData (не ставит src в "", если пусто)
+            if (data.audioData && typeof data.audioData === 'string' && data.audioData.trim() !== '') {
+                audioPlayer.src = data.audioData;
+                audioPlayer.load();
+            } else {
+                audioPlayer.removeAttribute('src');
+            }
         }
 
         /* === DRAG & DROP И ЗАГРУЗКА СВОЕГО ФАЙЛА === */
@@ -851,7 +936,7 @@
                     r.onload = e => resolve(e.target.result);
                     r.readAsDataURL(audioInput.files[0]);
                 });
-            } else if (audioPlayer.src && audioPlayer.src.startsWith('data:')) {
+            } else if (audioPlayer.getAttribute('src') && audioPlayer.src.startsWith('data:')) {
                 audioDataStr = audioPlayer.src;
             }
 
@@ -892,6 +977,11 @@
 
             let count = 3;
             countdownNum.textContent = count;
+            // Перезапуск анимации текста
+            countdownNum.style.animation = 'none';
+            void countdownNum.offsetWidth;
+            countdownNum.style.animation = 'pulseCount 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite';
+
             playSFX('tick');
 
             const timer = setInterval(() => {
@@ -943,7 +1033,9 @@
 
         function getCurrentGameTime() {
             if (isSynthPlaying && audioCtx) return audioCtx.currentTime - synthStartTime;
-            return audioPlayer.currentTime;
+            if (audioPlayer.hasAttribute('src') && !audioPlayer.paused) return audioPlayer.currentTime;
+            if (isSynthPlaying) return audioCtx.currentTime - synthStartTime;
+            return audioPlayer.currentTime || 0;
         }
 
         document.getElementById('start-editor-btn').addEventListener('click', () => {
@@ -957,9 +1049,10 @@
             initAudioContext();
             
             const togglePlay = () => {
-                if (audioPlayer.src) {
+                const hasAudio = audioPlayer.hasAttribute('src');
+                if (hasAudio) {
                     if (audioPlayer.paused) {
-                        audioPlayer.play();
+                        audioPlayer.play().catch(() => startSynthAudio());
                         recBtn.textContent = 'Пауза';
                     } else {
                         audioPlayer.pause();
@@ -1018,9 +1111,17 @@
             } else {
                 toggleUIElement('editor-controls', false);
                 updateHUD();
-                if (audioPlayer.src) {
+                
+                // ИСПРАВЛЕНИЕ: Безопасный запуск трека с фолбэком на встроенный синтезатор
+                if (audioPlayer.hasAttribute('src')) {
                     audioPlayer.currentTime = 0;
-                    audioPlayer.play();
+                    const playPromise = audioPlayer.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(err => {
+                            console.warn("Аудиофайл не запустился или отсутствует, включается встроенный синтезатор:", err);
+                            startSynthAudio();
+                        });
+                    }
                 } else {
                     startSynthAudio();
                 }
@@ -1313,15 +1414,20 @@
         function showFeedback(text, color) {
             hitFeedback.textContent = text;
             hitFeedback.style.color = color;
-            hitFeedback.style.opacity = '1';
-            setTimeout(() => { hitFeedback.style.opacity = '0'; }, 110);
+            hitFeedback.classList.remove('hit-pop-anim');
+            void hitFeedback.offsetWidth; // Рестарт CSS-анимации
+            hitFeedback.classList.add('hit-pop-anim');
         }
 
         function updateHUD() {
             if (currentMode === 'editor') {
                 document.getElementById('score-val').textContent = levelNotes.length;
             } else {
-                document.getElementById('score-val').textContent = score;
+                const scoreVal = document.getElementById('score-val');
+                scoreVal.textContent = score;
+                scoreVal.style.transform = 'scale(1.1)';
+                setTimeout(() => { scoreVal.style.transform = 'scale(1)'; }, 80);
+
                 document.getElementById('accuracy-val').textContent = calculateAccuracy().toFixed(1) + '%';
                 document.getElementById('combo-val').textContent = combo;
             }
