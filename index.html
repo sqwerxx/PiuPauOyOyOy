@@ -1157,6 +1157,9 @@
 
         function startSession(mode) {
             initAudioContext();
+
+            toggleUIElement('ui-panel', false);
+            
             toggleUIElement('hud', true);
             toggleUIElement('exit-btn', true);
 
