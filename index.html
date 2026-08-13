@@ -721,6 +721,7 @@
 
         let currentLoadedAudioFile = null; 
         let currentAudioBase64 = '';
+        let currentAudioBlobUrl = null;
 
         const LANES_COUNT = 4;
         const KEYS = ['KeyZ', 'KeyX', 'KeyC', 'KeyV'];
@@ -734,6 +735,30 @@
         let audioCtx = null;
         let isSynthPlaying = false;
         let synthStartTime = 0;
+
+        /* =========================================================
+           УНИВЕРСАЛЬНАЯ КОНВЕРТАЦИЯ BASE64 В BLOB (ДЛЯ ВСЕХ БРАУЗЕРОВ)
+           ========================================================= */
+        function dataURLToBlobUrl(dataUrl) {
+            if (!dataUrl || typeof dataUrl !== 'string') return '';
+            if (!dataUrl.startsWith('data:')) return dataUrl;
+            try {
+                const arr = dataUrl.split(',');
+                const mimeMatch = arr[0].match(/:(.*?);/);
+                const mime = mimeMatch ? mimeMatch[1] : 'audio/mp3';
+                const bstr = atob(arr[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                const blob = new Blob([u8arr], { type: mime });
+                return URL.createObjectURL(blob);
+            } catch (e) {
+                console.error("Ошибка конвертации Base64 в Blob:", e);
+                return dataUrl;
+            }
+        }
 
         /* =========================================================
            ОФИЦИАЛЬНЫЕ УРОВНИ
@@ -774,6 +799,20 @@
         function initAudioContext() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        /* Разблокировка браузерного аудио при первом клике */
+        function unlockAudio() {
+            initAudioContext();
+            if (audioPlayer.src) {
+                const playPromise = audioPlayer.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        audioPlayer.pause();
+                        audioPlayer.currentTime = 0;
+                    }).catch(e => console.log("Предзапуск аудио ограничен:", e));
+                }
+            }
         }
 
         function playSFX(type) {
@@ -857,10 +896,16 @@
                 levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false, holding: false }));
             }
             
+            if (currentAudioBlobUrl) {
+                URL.revokeObjectURL(currentAudioBlobUrl);
+                currentAudioBlobUrl = null;
+            }
+
             if (data.audioData && typeof data.audioData === 'string' && data.audioData.trim() !== '') {
-                audioPlayer.src = data.audioData;
-                audioPlayer.load();
                 currentAudioBase64 = data.audioData;
+                currentAudioBlobUrl = dataURLToBlobUrl(data.audioData);
+                audioPlayer.src = currentAudioBlobUrl;
+                audioPlayer.load();
             } else {
                 audioPlayer.removeAttribute('src');
                 currentAudioBase64 = '';
@@ -917,7 +962,12 @@
 
         setupDropzone('audio-dropzone', 'edit-audio-input', 'audio-filename', (file) => {
             currentLoadedAudioFile = file;
-            audioPlayer.src = URL.createObjectURL(file);
+            if (currentAudioBlobUrl) {
+                URL.revokeObjectURL(currentAudioBlobUrl);
+            }
+            currentAudioBlobUrl = URL.createObjectURL(file);
+            audioPlayer.src = currentAudioBlobUrl;
+            audioPlayer.load();
         });
 
         document.getElementById('start-custom-play-btn').addEventListener('click', () => {
@@ -943,8 +993,6 @@
                 });
             } else if (currentAudioBase64) {
                 audioDataStr = currentAudioBase64;
-            } else if (audioPlayer.getAttribute('src') && audioPlayer.src.startsWith('data:')) {
-                audioDataStr = audioPlayer.src;
             }
 
             const packageObj = {
@@ -975,7 +1023,7 @@
         }
 
         function startSessionWithCountdown(mode, onComplete) {
-            initAudioContext();
+            unlockAudio();
             toggleUIElement('ui-panel', false);
 
             const countdownOverlay = document.getElementById('countdown-overlay');
@@ -1040,7 +1088,6 @@
         function getCurrentGameTime() {
             if (isSynthPlaying && audioCtx) return audioCtx.currentTime - synthStartTime;
             if (audioPlayer.hasAttribute('src') && !audioPlayer.paused) return audioPlayer.currentTime;
-            if (isSynthPlaying) return audioCtx.currentTime - synthStartTime;
             return audioPlayer.currentTime || 0;
         }
 
@@ -1052,7 +1099,7 @@
 
         const recBtn = document.getElementById('rec-btn');
         recBtn.addEventListener('click', () => {
-            initAudioContext();
+            unlockAudio();
             
             const togglePlay = () => {
                 const hasAudio = audioPlayer.hasAttribute('src');
@@ -1100,7 +1147,7 @@
         });
 
         function startSession(mode) {
-            initAudioContext();
+            unlockAudio();
             toggleUIElement('hud', true);
             toggleUIElement('exit-btn', true);
 
@@ -1123,7 +1170,7 @@
                     const playPromise = audioPlayer.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(err => {
-                            console.warn("Аудиофайл не запустился или отсутствует, включается синтезатор:", err);
+                            console.warn("Аудиофайл не запустился, включается синтезатор:", err);
                             startSynthAudio();
                         });
                     }
