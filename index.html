@@ -3,70 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rhythm Studio - Flat Edition</title>
+    <title>Rhythm Studio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* === СОЧНЫЙ ФЛЭТ-ДИЗАЙН (FIGMA / CLAUDE STYLE) === */
+        /* === УЛУЧШЕННЫЙ ПРЕМИУМ ФЛЭТ-ДИЗАЙН === */
         [data-theme="flat-dark"] {
-            --bg-body: #090d16;
-            --panel-bg: #111827;
-            --panel-border: #1f2937;
-            --text-main: #f9fafb;
-            --text-sub: #9ca3af;
+            --bg-body: #080c14;
+            --panel-bg: #0f172a;
+            --panel-border: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
             --primary: #3b82f6;
             --primary-hover: #2563eb;
             --accent: #06b6d4;
-            --canvas-bg: #090d16;
-            --card-bg: #1f2937;
-            --card-border: #374151;
+            --canvas-bg: #080c14;
+            --card-bg: #182238;
+            --card-border: #26354a;
+            --dropzone-bg: #111c33;
             --lane-colors: #3b82f6, #06b6d4, #ec4899, #8b5cf6;
         }
 
         [data-theme="flat-light"] {
-            --bg-body: #f8fafc;
+            --bg-body: #f1f5f9;
             --panel-bg: #ffffff;
-            --panel-border: #e2e8f0;
+            --panel-border: #cbd5e1;
             --text-main: #0f172a;
             --text-sub: #64748b;
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --accent: #0284c7;
             --canvas-bg: #ffffff;
-            --card-bg: #f1f5f9;
-            --card-border: #cbd5e1;
+            --card-bg: #f8fafc;
+            --card-border: #e2e8f0;
+            --dropzone-bg: #f1f5f9;
             --lane-colors: #2563eb, #0284c7, #db2777, #7c3aed;
         }
 
         [data-theme="flat-emerald"] {
-            --bg-body: #022c22;
+            --bg-body: #022019;
             --panel-bg: #064e3b;
             --panel-border: #047857;
             --text-main: #ecfdf5;
-            --text-sub: #a7f3d0;
+            --text-sub: #6ee7b7;
             --primary: #10b981;
             --primary-hover: #059669;
             --accent: #34d399;
-            --canvas-bg: #022c22;
-            --card-bg: #047857;
-            --card-border: #059669;
+            --canvas-bg: #022019;
+            --card-bg: #03392c;
+            --card-border: #056146;
+            --dropzone-bg: #022c22;
             --lane-colors: #10b981, #34d399, #f59e0b, #06b6d4;
         }
 
         [data-theme="slate-indigo"] {
-            --bg-body: #0f172a;
+            --bg-body: #0b0f19;
             --panel-bg: #1e1b4b;
             --panel-border: #312e81;
             --text-main: #e0e7ff;
-            --text-sub: #818cf8;
+            --text-sub: #a5b4fc;
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --accent: #38bdf8;
-            --canvas-bg: #0f172a;
-            --card-bg: #312e81;
-            --card-border: #4338ca;
+            --canvas-bg: #0b0f19;
+            --card-bg: #272361;
+            --card-border: #3b3591;
+            --dropzone-bg: #17153b;
             --lane-colors: #6366f1, #38bdf8, #f43f5e, #a855f7;
         }
 
@@ -81,7 +85,7 @@
         body {
             background: var(--bg-body);
             color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -97,75 +101,83 @@
             transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 22px;
             background: var(--panel-bg);
-            padding: 28px;
-            border-radius: 20px;
+            padding: 32px;
+            border-radius: 24px;
             border: 1px solid var(--panel-border);
             z-index: 10;
-            width: 460px;
+            width: 480px;
             max-width: 92vw;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
         }
 
-        .brand-header {
-            text-align: center;
-        }
+        /* Кастомный скроллбар */
+        #ui-panel::-webkit-scrollbar { width: 6px; }
+        #ui-panel::-webkit-scrollbar-track { background: transparent; }
+        #ui-panel::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 10px; }
+
+        .brand-header { text-align: center; }
 
         .brand-title {
-            font-size: 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
             font-weight: 800;
-            letter-spacing: -0.8px;
+            letter-spacing: -1px;
             color: var(--text-main);
+            line-height: 1;
         }
 
         .brand-subtitle {
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             color: var(--text-sub);
-            font-weight: 500;
-            margin-top: 2px;
+            font-weight: 600;
+            margin-top: 6px;
+            letter-spacing: 0.3px;
         }
 
         /* ТАБЫ */
         .mode-tabs {
             display: flex;
             background: var(--bg-body);
-            padding: 4px;
-            border-radius: 12px;
+            padding: 5px;
+            border-radius: 14px;
             gap: 4px;
             border: 1px solid var(--panel-border);
         }
 
         .tab-btn {
             flex: 1;
-            padding: 10px 6px;
+            padding: 11px 8px;
             background: transparent;
             border: none;
             color: var(--text-sub);
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.78rem;
-            transition: all 0.15s ease;
+            font-size: 0.8rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Outfit', sans-serif;
         }
 
         .tab-btn.active {
             background: var(--primary);
             color: #ffffff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .tab-content {
             display: none;
             flex-direction: column;
-            gap: 16px;
+            gap: 18px;
         }
 
         .tab-content.active { display: flex; }
 
-        /* КАРТОЧКИ */
-        .official-levels { display: flex; flex-direction: column; gap: 10px; }
+        /* КАРТОЧКИ И ДРОПЗОНЫ */
+        .official-levels { display: flex; flex-direction: column; gap: 12px; }
 
         .level-card {
             display: flex;
@@ -173,19 +185,26 @@
             align-items: center;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            padding: 14px 16px;
-            border-radius: 12px;
+            padding: 16px 18px;
+            border-radius: 16px;
+            transition: border-color 0.2s ease, transform 0.15s ease;
         }
 
-        .level-info h4 { font-size: 0.95rem; font-weight: 700; color: var(--text-main); }
+        .level-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .level-info h4 { font-family: 'Outfit', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
         .level-badges { display: flex; gap: 6px; margin-top: 6px; }
 
         .badge {
             font-size: 0.68rem;
             font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 4px 10px;
+            border-radius: 8px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .badge-easy { background: #10b981; color: #ffffff; }
@@ -193,40 +212,79 @@
         .badge-hard { background: #ef4444; color: #ffffff; }
         .badge-info { background: var(--panel-border); color: var(--text-main); }
 
+        /* DROPZONE (DRAG & DROP) */
+        .dropzone {
+            border: 2px dashed var(--panel-border);
+            background: var(--dropzone-bg);
+            border-radius: 16px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropzone:hover, .dropzone.drag-over {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .dropzone-icon {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .dropzone-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .dropzone-sub {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+        }
+
         /* ИНПУТЫ И КНОПКИ */
         .input-group { display: flex; flex-direction: column; gap: 6px; }
-        label { font-size: 0.78rem; color: var(--text-sub); font-weight: 700; }
+        label { font-size: 0.78rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        input[type="file"], input[type="text"], input[type="number"], select {
-            font-size: 0.85rem;
+        input[type="text"], input[type="number"], select {
+            font-size: 0.88rem;
             color: var(--text-main);
             background: var(--bg-body);
             border: 1px solid var(--panel-border);
-            padding: 11px;
-            border-radius: 10px;
+            padding: 12px 14px;
+            border-radius: 12px;
             outline: none;
             font-family: inherit;
             font-weight: 600;
+            transition: border-color 0.2s ease;
         }
 
         input:focus, select:focus { border-color: var(--primary); }
 
         .btn {
+            font-family: 'Outfit', sans-serif;
             background: var(--primary);
             border: none;
             color: white;
-            padding: 12px 18px;
-            font-size: 0.88rem;
+            padding: 14px 20px;
+            font-size: 0.95rem;
             font-weight: 800;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.15s ease, transform 0.1s ease;
+            transition: all 0.2s ease;
             text-align: center;
+            letter-spacing: 0.3px;
         }
 
-        .btn:hover { background: var(--primary-hover); }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .btn:active { transform: scale(0.98); }
-        .btn-small { padding: 8px 14px; font-size: 0.78rem; border-radius: 8px; }
+        .btn-small { padding: 9px 16px; font-size: 0.82rem; border-radius: 10px; }
 
         /* ПАНЕЛЬ РЕДАКТОРА (СНИЗУ) */
         #editor-controls {
@@ -238,10 +296,10 @@
             gap: 12px;
             background: var(--panel-bg);
             padding: 12px 20px;
-            border-radius: 14px;
+            border-radius: 16px;
             border: 1px solid var(--panel-border);
             z-index: 20;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
         }
 
         .btn-rec { background: #ef4444; }
@@ -249,25 +307,26 @@
 
         #exit-btn {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 24px;
+            left: 24px;
             z-index: 15;
             display: none;
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 10px 18px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.82rem;
+            font-size: 0.85rem;
+            font-family: 'Outfit', sans-serif;
         }
 
-        /* АККУРАТНЫЙ HUD В ПРАВОМ ВЕРХНЕМ УГЛУ */
+        /* HUD В ПРАВОМ ВЕРХНЕМ УГЛУ */
         #hud {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            right: 24px;
             pointer-events: none;
             z-index: 15;
             display: none;
@@ -278,8 +337,8 @@
             text-align: right;
         }
 
-        .hud-score { font-size: 1.8rem; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
-        .hud-sub-metrics { display: flex; gap: 12px; font-size: 0.85rem; font-weight: 700; color: var(--text-sub); }
+        .hud-score { font-family: 'Outfit', sans-serif; font-size: 2.2rem; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+        .hud-sub-metrics { display: flex; gap: 12px; font-size: 0.9rem; font-weight: 800; color: var(--text-sub); }
         .hud-accuracy { color: var(--primary); }
         .hud-combo { color: var(--accent); }
 
@@ -287,7 +346,8 @@
         #countdown-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(9, 13, 22, 0.9);
+            background: rgba(8, 12, 20, 0.92);
+            backdrop-filter: blur(4px);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -296,24 +356,25 @@
         }
 
         #countdown-number {
-            font-size: 7rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 8rem;
             font-weight: 900;
             color: var(--primary);
             line-height: 1;
         }
 
         #countdown-sub {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--text-sub);
-            margin-top: 12px;
+            margin-top: 14px;
         }
 
         /* ФИНАЛЬНОЕ ОКНО РЕЗУЛЬТАТОВ (S-F) */
         #results-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(9, 13, 22, 0.92);
+            background: rgba(8, 12, 20, 0.94);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -324,22 +385,24 @@
         .results-card {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
-            padding: 32px;
-            border-radius: 20px;
-            width: 360px;
+            padding: 36px;
+            border-radius: 24px;
+            width: 380px;
             max-width: 90vw;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
             text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         .rank-badge {
-            font-size: 4.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 5rem;
             font-weight: 900;
             line-height: 1;
-            margin: 8px 0;
+            margin: 6px 0;
         }
 
         .rank-S { color: #f59e0b; }
@@ -360,15 +423,15 @@
 
         .stat-item {
             background: var(--bg-body);
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 12px 14px;
+            border-radius: 12px;
             border: 1px solid var(--panel-border);
         }
 
-        .stat-label { font-size: 0.7rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
-        .stat-value { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
+        .stat-label { font-size: 0.68rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+        .stat-value { font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
 
-        /* ИГРОВОЙ КОНТЕЙНЕР (ОПТИМИЗИРОВАН) */
+        /* ИГРОВОЙ КОНТЕЙНЕР */
         #game-container {
             position: relative;
             width: 100%;
@@ -388,11 +451,12 @@
             top: 60%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.8rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
             font-weight: 900;
             pointer-events: none;
             opacity: 0;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             transition: opacity 0.08s ease;
         }
     </style>
@@ -411,7 +475,7 @@
     <!-- Результаты уровня -->
     <div id="results-overlay">
         <div class="results-card">
-            <h3 style="font-size: 1.2rem; font-weight: 800;">Результаты уровня</h3>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 800;">Результаты трека</h3>
             <div id="result-rank" class="rank-badge rank-S">S</div>
             
             <div class="stats-grid">
@@ -429,11 +493,11 @@
                 </div>
                 <div class="stat-item">
                     <div class="stat-label">Perfect / Good / Miss</div>
-                    <div class="stat-value" id="res-breakdown" style="font-size: 0.85rem; margin-top: 6px;">0 / 0 / 0</div>
+                    <div class="stat-value" id="res-breakdown" style="font-size: 0.9rem; margin-top: 4px;">0 / 0 / 0</div>
                 </div>
             </div>
 
-            <button class="btn" style="width: 100%; margin-top: 8px;" onclick="closeResults()">Продолжить</button>
+            <button class="btn" style="width: 100%; margin-top: 6px;" onclick="closeResults()">Продолжить</button>
         </div>
     </div>
 
@@ -441,31 +505,33 @@
     <div id="ui-panel">
         <div class="brand-header">
             <div class="brand-title">Rhythm Studio</div>
-            <div class="brand-subtitle">Flat Edition Studio</div>
+            <div class="brand-subtitle">Ultra Flat Edition</div>
         </div>
         
         <div class="mode-tabs">
             <button class="tab-btn active" onclick="switchTab('official')">GitHub Треки</button>
             <button class="tab-btn" onclick="switchTab('custom')">Пакет (.rs)</button>
             <button class="tab-btn" onclick="switchTab('editor')">Редактор</button>
-            <button class="tab-btn" onclick="switchTab('style')">Кастомизация</button>
+            <button class="tab-btn" onclick="switchTab('style')">Стиль</button>
         </div>
 
-        <!-- Таб 1: GitHub Треки -->
+        <!-- Таб 1: GitHub Треки (БЕЗ ФЕЙКОВЫХ ЗАГЛУШЕК) -->
         <div id="tab-official" class="tab-content active">
             <div class="official-levels" id="official-levels-list"></div>
         </div>
 
-        <!-- Таб 2: Загрузка готового уровня .rs -->
+        <!-- Таб 2: Загрузка готового уровня .rs (С DRAG & DROP) -->
         <div id="tab-custom" class="tab-content">
-            <div class="input-group">
-                <label>Выберите пакет уровня (.rs):</label>
-                <input type="file" id="play-package-input" accept=".rs,.json">
+            <div class="dropzone" id="package-dropzone">
+                <div class="dropzone-icon">📦</div>
+                <div class="dropzone-text" id="package-filename">Перетащите сюда .rs файл уровня</div>
+                <div class="dropzone-sub">или нажмите для выбора через проводник</div>
+                <input type="file" id="play-package-input" accept=".rs,.json" style="display: none;">
             </div>
             <button class="btn" id="start-custom-play-btn">Запустить пакет</button>
         </div>
 
-        <!-- Таб 3: Редактор -->
+        <!-- Таб 3: Редактор (С DRAG & DROP ДЛЯ АУДИО) -->
         <div id="tab-editor" class="tab-content">
             <div class="input-group">
                 <label>Название трека:</label>
@@ -493,9 +559,13 @@
                     <option value="32">1/32 (Тридцать вторые)</option>
                 </select>
             </div>
-            <div class="input-group">
-                <label>Музыкальный файл (.mp3, .wav):</label>
-                <input type="file" id="edit-audio-input" accept="audio/*">
+            
+            <!-- Дропзона аудиофайла -->
+            <div class="dropzone" id="audio-dropzone">
+                <div class="dropzone-icon">🎵</div>
+                <div class="dropzone-text" id="audio-filename">Перетащите сюда аудиозапись (.mp3, .wav)</div>
+                <div class="dropzone-sub">или нажмите для выбора файла</div>
+                <input type="file" id="edit-audio-input" accept="audio/*" style="display: none;">
             </div>
 
             <button class="btn" id="start-editor-btn" style="margin-top: 4px;">Войти в редактор</button>
@@ -539,7 +609,7 @@
         <button class="btn btn-small" id="export-btn" style="background: #10b981;">Скачать .RS</button>
     </div>
 
-    <!-- HUD (ВЕРХНИЙ ПРАВЫЙ УГОЛ) -->
+    <!-- HUD -->
     <div id="hud">
         <div class="hud-score" id="score-val">0</div>
         <div class="hud-sub-metrics">
@@ -562,7 +632,7 @@
         let currentMode = 'official'; 
         let isRunning = false;
 
-        // Метрики и счет
+        // Метрики
         let score = 0;
         let combo = 0;
         let maxCombo = 0;
@@ -580,10 +650,10 @@
         let currentLaneStyle = 'lines';
 
         const THEMES_CONFIG = {
-            'flat-dark': { laneColors: ['#3b82f6', '#06b6d4', '#ec4899', '#8b5cf6'], hitLine: '#3b82f6', bg: '#090d16', line: '#1f2937' },
+            'flat-dark': { laneColors: ['#3b82f6', '#06b6d4', '#ec4899', '#8b5cf6'], hitLine: '#3b82f6', bg: '#080c14', line: '#1e293b' },
             'flat-light': { laneColors: ['#2563eb', '#0284c7', '#db2777', '#7c3aed'], hitLine: '#2563eb', bg: '#ffffff', line: '#e2e8f0' },
-            'flat-emerald': { laneColors: ['#10b981', '#34d399', '#f59e0b', '#06b6d4'], hitLine: '#10b981', bg: '#022c22', line: '#047857' },
-            'slate-indigo': { laneColors: ['#6366f1', '#38bdf8', '#f43f5e', '#a855f7'], hitLine: '#6366f1', bg: '#0f172a', line: '#312e81' }
+            'flat-emerald': { laneColors: ['#10b981', '#34d399', '#f59e0b', '#06b6d4'], hitLine: '#10b981', bg: '#022019', line: '#047857' },
+            'slate-indigo': { laneColors: ['#6366f1', '#38bdf8', '#f43f5e', '#a855f7'], hitLine: '#6366f1', bg: '#0b0f19', line: '#312e81' }
         };
 
         const LANES_COUNT = 4;
@@ -599,6 +669,7 @@
         let isSynthPlaying = false;
         let synthStartTime = 0;
 
+        // GitHub Уровни
         const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/pavel/rhythm-studio-levels/main/";
         const OFFICIAL_LEVELS = [
             { id: 1, title: "Velvet Horizons", bpm: 115, timeSig: "4/4", difficulty: "Easy", file: "velvet_horizons.rs" },
@@ -637,7 +708,6 @@
             osc.start(now); osc.stop(now + 0.12);
         }
 
-        // ВЫРАВНИВАНИЕ / КВАНТОВАНИЕ НОТ ПО BPM
         function snapToGrid(time, bpm, subdivision) {
             const beatDuration = 60 / bpm;
             const stepDuration = beatDuration / (subdivision / 4);
@@ -660,68 +730,89 @@
                             <span class="badge badge-info">${lvl.timeSig}</span>
                         </div>
                     </div>
-                    <button class="btn btn-small" onclick="loadAndPlayOfficial('${lvl.file}', ${lvl.bpm}, '${lvl.timeSig}')">Играть</button>
+                    <button class="btn btn-small" onclick="loadAndPlayOfficial('${lvl.file}')">Играть</button>
                 `;
                 container.appendChild(card);
             });
         }
         renderOfficialLevels();
 
-        window.loadAndPlayOfficial = async function(fileName, defaultBpm, defaultSig) {
+        // ТОЛЬКО НАСТОЯЩАЯ ЗАГРУЗКА С GITHUB (БЕЗ ЗАГЛУШЕК И ДЕМО-НОТ)
+        window.loadAndPlayOfficial = async function(fileName) {
             const url = GITHUB_RAW_BASE + fileName;
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error("Файл не найден");
+                if (!response.ok) throw new Error("Уровень не найден на GitHub.");
                 const data = await response.json();
                 loadPackageData(data);
+                startSessionWithCountdown('play');
             } catch (err) {
-                generateDemoLevel(defaultBpm, defaultSig);
+                alert(`Не удалось загрузить уровень с GitHub.\nПричина: ${err.message}`);
             }
-            startSessionWithCountdown('play');
         };
-
-        function generateDemoLevel(bpm, sig) {
-            currentBpm = bpm;
-            currentTimeSig = sig;
-            levelNotes = [];
-            const secPerBeat = 60 / bpm;
-            const beatsPerMeasure = sig === '3/4' ? 3 : 4;
-            
-            for (let b = 2; b < 50; b++) {
-                const time = b * secPerBeat;
-                const lane = b % 4;
-                const isHold = (b % (beatsPerMeasure * 2) === 0);
-                levelNotes.push({
-                    time: parseFloat(time.toFixed(3)),
-                    lane: lane,
-                    duration: isHold ? parseFloat((secPerBeat * 1.5).toFixed(3)) : 0
-                });
-            }
-            audioPlayer.src = "";
-        }
 
         function loadPackageData(data) {
             if (data.bpm) currentBpm = data.bpm;
             if (data.timeSignature) currentTimeSig = data.timeSignature;
-            if (data.notes) levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false, holding: false }));
+            if (data.notes) {
+                levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false, holding: false }));
+            }
             audioPlayer.src = data.audioData || "";
         }
 
-        document.getElementById('play-package-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+        /* === DRAG & DROP ОБРАБОТКА === */
+        function setupDropzone(dropzoneId, inputId, textId, onFileSelected) {
+            const dropzone = document.getElementById(dropzoneId);
+            const input = document.getElementById(inputId);
+            const textEl = document.getElementById(textId);
+
+            dropzone.addEventListener('click', () => input.click());
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, () => dropzone.classList.add('drag-over'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, () => dropzone.classList.remove('drag-over'), false);
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) handleFile(files[0]);
+            });
+
+            input.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) handleFile(e.target.files[0]);
+            });
+
+            function handleFile(file) {
+                textEl.textContent = `Выбран: ${file.name}`;
+                onFileSelected(file);
+            }
+        }
+
+        // Настройка Drag & Drop для пакета уровней (.rs)
+        setupDropzone('package-dropzone', 'play-package-input', 'package-filename', (file) => {
             const reader = new FileReader();
             reader.onload = (evt) => {
                 try {
                     loadPackageData(JSON.parse(evt.target.result));
-                    alert('Пакет уровней загружен!');
-                } catch (err) { alert('Ошибка загрузки .rs файла!'); }
+                } catch (err) { alert('Ошибка структуры файла .rs!'); }
             };
             reader.readAsText(file);
         });
 
+        // Настройка Drag & Drop для Аудио в редакторе
+        setupDropzone('audio-dropzone', 'edit-audio-input', 'audio-filename', (file) => {
+            audioPlayer.src = URL.createObjectURL(file);
+        });
+
         document.getElementById('start-custom-play-btn').addEventListener('click', () => {
-            if (levelNotes.length === 0) return alert('Выберите файл уровня (.rs)!');
+            if (levelNotes.length === 0) return alert('Пожалуйста, перетащите или выберите .rs файл уровня!');
             startSessionWithCountdown('play');
         });
 
@@ -788,7 +879,7 @@
                     if (onComplete) onComplete();
                     else startSession(mode);
                 }
-            }, 700);
+            }, 650);
         }
 
         function resizeCanvas() {
@@ -831,20 +922,12 @@
             return audioPlayer.currentTime;
         }
 
-        // ВХОД В РЕДАКТОР (БЕЗ 3-2-1)
         document.getElementById('start-editor-btn').addEventListener('click', () => {
             currentBpm = parseInt(document.getElementById('edit-bpm').value) || 120;
             currentTimeSig = document.getElementById('edit-timesig').value || '4/4';
-            
-            const fileInput = document.getElementById('edit-audio-input');
-            if (fileInput.files && fileInput.files[0]) {
-                audioPlayer.src = URL.createObjectURL(fileInput.files[0]);
-            }
-            
-            startSession('editor'); // Войти сразу без отсчета
+            startSession('editor');
         });
 
-        // ЗАПУСК ЗАПИСИ В РЕДАКТОРЕ (С 3-2-1)
         const recBtn = document.getElementById('rec-btn');
         recBtn.addEventListener('click', () => {
             initAudioContext();
@@ -905,6 +988,8 @@
             score = 0; combo = 0; maxCombo = 0;
             perfectCount = 0; goodCount = 0; missCount = 0; evaluatedNotesCount = 0;
 
+            levelNotes.forEach(n => { n.hit = false; n.missed = false; n.holding = false; });
+
             if (mode === 'editor') {
                 document.getElementById('editor-controls').style.display = 'flex';
                 document.getElementById('score-val').textContent = levelNotes.length;
@@ -925,17 +1010,22 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // ОБРАБОТКА ОКОНЧАНИЯ УРОВНЯ И ВЫЧИСЛЕНИЕ РАНГА (S-F)
+        // УРОВЕНЬ ЗАКАНЧИВАЕТСЯ МГНОВЕННО ПОСЛЕ ПОСЛЕДНЕЙ НОТЫ
         function checkTrackEnd() {
-            if (currentMode === 'editor') return;
+            if (currentMode === 'editor' || !isRunning) return;
 
-            let isEnded = false;
-            if (audioPlayer.src && audioPlayer.ended) isEnded = true;
-            if (isSynthPlaying && getCurrentGameTime() > 120) isEnded = true;
-
-            if (isEnded) {
-                isRunning = false;
-                showResults();
+            if (levelNotes.length > 0) {
+                const allFinished = levelNotes.every(n => (n.hit || n.missed) && !n.holding);
+                if (allFinished) {
+                    setTimeout(() => {
+                        if (isRunning) {
+                            isRunning = false;
+                            audioPlayer.pause();
+                            stopSynthAudio();
+                            showResults();
+                        }
+                    }, 200);
+                }
             }
         }
 
@@ -979,7 +1069,6 @@
             const currentTime = getCurrentGameTime();
             const themeCfg = THEMES_CONFIG[currentTheme];
 
-            // Заливка фона
             ctx.fillStyle = themeCfg.bg;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1007,10 +1096,10 @@
                     ctx.fillRect(i * laneWidth, 0, laneWidth, canvas.height);
                 }
 
-                ctx.fillStyle = lanePressed[i] ? laneColors[i] : (currentTheme === 'flat-light' ? '#64748b' : '#9ca3af');
-                ctx.font = '800 15px Plus Jakarta Sans';
+                ctx.fillStyle = lanePressed[i] ? laneColors[i] : (currentTheme === 'flat-light' ? '#64748b' : '#94a3b8');
+                ctx.font = '800 15px Outfit, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(LANE_NAMES[i], i * laneWidth + laneWidth / 2, hitLineY + 34);
+                ctx.fillText(LANE_NAMES[i], i * laneWidth + laneWidth / 2, hitLineY + 36);
             }
 
             // Тактовые линии
@@ -1026,7 +1115,7 @@
 
                 if (y >= 0 && y <= canvas.height) {
                     const isMeasureStart = (b % beatsPerMeasure) === 0;
-                    ctx.strokeStyle = isMeasureStart ? 'rgba(245, 158, 11, 0.4)' : 'rgba(156, 163, 175, 0.12)';
+                    ctx.strokeStyle = isMeasureStart ? 'rgba(245, 158, 11, 0.4)' : 'rgba(148, 163, 184, 0.12)';
                     ctx.beginPath();
                     ctx.moveTo(0, y);
                     ctx.lineTo(canvas.width, y);
@@ -1042,7 +1131,7 @@
             ctx.lineTo(canvas.width, hitLineY);
             ctx.stroke();
 
-            // Отрисовка и логика нот
+            // Отрисовка нот
             levelNotes.forEach(note => {
                 const timeDiff = note.time - currentTime;
                 const dur = note.duration || 0;
@@ -1097,7 +1186,6 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // ОТРИСОВКА СКИНОВ НОТ
         function drawNoteSkin(x, y, laneWidth, color) {
             const padding = 10;
             const w = laneWidth - padding * 2;
@@ -1132,16 +1220,14 @@
             drawNoteSkin(x, yHead, laneWidth, color);
         }
 
-        // ОБРАБОТКА НАЖАТИЙ (Z X C V / TOUCH)
+        // НАЖАТИЯ И ТРЕКИНГ ДЛИТЕЛЬНОСТИ
         function handlePressStart(laneIndex) {
             if (!isRunning) return;
             lanePressed[laneIndex] = true;
             const currentTime = getCurrentGameTime();
 
             if (currentMode === 'editor') {
-                const quantizeVal = parseInt(document.getElementById('edit-quantize').value) || 8;
-                const snappedTime = snapToGrid(currentTime, currentBpm, quantizeVal);
-                activeHoldStart[laneIndex] = snappedTime;
+                activeHoldStart[laneIndex] = currentTime;
             } else {
                 const targetNote = levelNotes.find(n => 
                     n.lane === laneIndex && 
@@ -1184,22 +1270,27 @@
 
             if (currentMode === 'editor' && activeHoldStart[laneIndex] !== null) {
                 const quantizeVal = parseInt(document.getElementById('edit-quantize').value) || 8;
-                const start = activeHoldStart[laneIndex];
-                const end = snapToGrid(currentTime, currentBpm, quantizeVal);
-                let duration = Math.max(0, end - start);
+                const startTime = activeHoldStart[laneIndex];
+                const rawPressDuration = currentTime - startTime; // Реальная длительность нажатия
 
-                // Если удержание было короче 1/16 доли, считаем одиночной нотой
-                if (duration < (60 / currentBpm / (quantizeVal / 4))) duration = 0;
+                const snappedStart = snapToGrid(startTime, currentBpm, quantizeVal);
+                const snappedEnd = snapToGrid(currentTime, currentBpm, quantizeVal);
+                let noteDuration = Math.max(0, snappedEnd - snappedStart);
+
+                // ДЛИННАЯ НОТА ТОЛЬКО ЕСЛИ НАЖАТИЕ ДЛИЛОСЬ СТРОГО БОЛЕЕ 0.33 СЕКУНДЫ!
+                if (rawPressDuration <= 0.33 || noteDuration <= 0.33) {
+                    noteDuration = 0;
+                }
 
                 levelNotes.push({
-                    time: parseFloat(start.toFixed(3)),
-                    duration: parseFloat(duration.toFixed(3)),
+                    time: parseFloat(snappedStart.toFixed(3)),
+                    duration: parseFloat(noteDuration.toFixed(3)),
                     lane: laneIndex
                 });
 
                 activeHoldStart[laneIndex] = null;
                 document.getElementById('score-val').textContent = levelNotes.length;
-                showFeedback(duration > 0 ? 'HOLD' : 'TAP', '#10b981');
+                showFeedback(noteDuration > 0 ? 'HOLD NOTE' : 'TAP NOTE', '#10b981');
                 playSFX('perfect');
             } else {
                 const holdingNote = levelNotes.find(n => n.lane === laneIndex && n.holding);
@@ -1217,7 +1308,7 @@
             hitFeedback.textContent = text;
             hitFeedback.style.color = color;
             hitFeedback.style.opacity = '1';
-            setTimeout(() => { hitFeedback.style.opacity = '0'; }, 100);
+            setTimeout(() => { hitFeedback.style.opacity = '0'; }, 110);
         }
 
         function updateHUD() {
