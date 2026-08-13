@@ -3,62 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rhythm Studio</title>
+    <title>Rhythm Studio - Flat Edition</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* === ФЛЭТ-ДИЗАЙН ТЕМЫ (FLAT MINIMALISM) === */
+        /* === СОЧНЫЙ ФЛЭТ-ДИЗАЙН (FIGMA / CLAUDE STYLE) === */
         [data-theme="flat-dark"] {
-            --bg-body: #0f172a;
-            --panel-bg: #1e293b;
-            --panel-border: #334155;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
+            --bg-body: #090d16;
+            --panel-bg: #111827;
+            --panel-border: #1f2937;
+            --text-main: #f9fafb;
+            --text-sub: #9ca3af;
             --primary: #3b82f6;
             --primary-hover: #2563eb;
             --accent: #06b6d4;
-            --canvas-bg: #0f172a;
-            --lane-line: #1e293b;
-            --hitline-color: #3b82f6;
-            --card-bg: #334155;
-            --card-border: #475569;
-            --measure-line: #f59e0b;
+            --canvas-bg: #090d16;
+            --card-bg: #1f2937;
+            --card-border: #374151;
+            --lane-colors: #3b82f6, #06b6d4, #ec4899, #8b5cf6;
         }
 
         [data-theme="flat-light"] {
-            --bg-body: #f1f5f9;
+            --bg-body: #f8fafc;
             --panel-bg: #ffffff;
-            --panel-border: #cbd5e1;
+            --panel-border: #e2e8f0;
             --text-main: #0f172a;
             --text-sub: #64748b;
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --accent: #0284c7;
             --canvas-bg: #ffffff;
-            --lane-line: #e2e8f0;
-            --hitline-color: #2563eb;
-            --card-bg: #f8fafc;
+            --card-bg: #f1f5f9;
             --card-border: #cbd5e1;
-            --measure-line: #d97706;
+            --lane-colors: #2563eb, #0284c7, #db2777, #7c3aed;
         }
 
         [data-theme="flat-emerald"] {
-            --bg-body: #064e3b;
-            --panel-bg: #065f46;
+            --bg-body: #022c22;
+            --panel-bg: #064e3b;
             --panel-border: #047857;
             --text-main: #ecfdf5;
             --text-sub: #a7f3d0;
             --primary: #10b981;
             --primary-hover: #059669;
             --accent: #34d399;
-            --canvas-bg: #064e3b;
-            --lane-line: #065f46;
-            --hitline-color: #10b981;
+            --canvas-bg: #022c22;
             --card-bg: #047857;
             --card-border: #059669;
-            --measure-line: #f59e0b;
+            --lane-colors: #10b981, #34d399, #f59e0b, #06b6d4;
+        }
+
+        [data-theme="slate-indigo"] {
+            --bg-body: #0f172a;
+            --panel-bg: #1e1b4b;
+            --panel-border: #312e81;
+            --text-main: #e0e7ff;
+            --text-sub: #818cf8;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #38bdf8;
+            --canvas-bg: #0f172a;
+            --card-bg: #312e81;
+            --card-border: #4338ca;
+            --lane-colors: #6366f1, #38bdf8, #f43f5e, #a855f7;
         }
 
         * {
@@ -72,7 +81,7 @@
         body {
             background: var(--bg-body);
             color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -80,7 +89,7 @@
             overflow: hidden;
         }
 
-        /* === ГЛАВНАЯ ПАНЕЛЬ ИНТЕРФЕЙСА === */
+        /* === МЕНЮ И ИНТЕРФЕЙС === */
         #ui-panel {
             position: absolute;
             top: 50%;
@@ -90,22 +99,33 @@
             flex-direction: column;
             gap: 20px;
             background: var(--panel-bg);
-            padding: 24px;
-            border-radius: 16px;
-            border: 2px solid var(--panel-border);
+            padding: 28px;
+            border-radius: 20px;
+            border: 1px solid var(--panel-border);
             z-index: 10;
-            width: 440px;
+            width: 460px;
             max-width: 92vw;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-header {
+            text-align: center;
         }
 
         .brand-title {
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.8px;
             color: var(--text-main);
+        }
+
+        .brand-subtitle {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            font-weight: 500;
+            margin-top: 2px;
         }
 
         /* ТАБЫ */
@@ -120,15 +140,15 @@
 
         .tab-btn {
             flex: 1;
-            padding: 10px 4px;
+            padding: 10px 6px;
             background: transparent;
             border: none;
             color: var(--text-sub);
             border-radius: 8px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.8rem;
-            transition: background 0.15s ease, color 0.15s ease;
+            font-size: 0.78rem;
+            transition: all 0.15s ease;
         }
 
         .tab-btn.active {
@@ -139,12 +159,12 @@
         .tab-content {
             display: none;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
         }
 
         .tab-content.active { display: flex; }
 
-        /* КАРТОЧКИ УРОВНЕЙ */
+        /* КАРТОЧКИ */
         .official-levels { display: flex; flex-direction: column; gap: 10px; }
 
         .level-card {
@@ -153,17 +173,17 @@
             align-items: center;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            padding: 12px 16px;
+            padding: 14px 16px;
             border-radius: 12px;
         }
 
         .level-info h4 { font-size: 0.95rem; font-weight: 700; color: var(--text-main); }
-        .level-badges { display: flex; gap: 6px; margin-top: 4px; }
+        .level-badges { display: flex; gap: 6px; margin-top: 6px; }
 
         .badge {
             font-size: 0.68rem;
             font-weight: 800;
-            padding: 3px 6px;
+            padding: 3px 8px;
             border-radius: 6px;
             text-transform: uppercase;
         }
@@ -182,10 +202,11 @@
             color: var(--text-main);
             background: var(--bg-body);
             border: 1px solid var(--panel-border);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 11px;
+            border-radius: 10px;
             outline: none;
             font-family: inherit;
+            font-weight: 600;
         }
 
         input:focus, select:focus { border-color: var(--primary); }
@@ -194,32 +215,33 @@
             background: var(--primary);
             border: none;
             color: white;
-            padding: 12px;
-            font-size: 0.9rem;
+            padding: 12px 18px;
+            font-size: 0.88rem;
             font-weight: 800;
             border-radius: 10px;
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: background 0.15s ease, transform 0.1s ease;
             text-align: center;
         }
 
         .btn:hover { background: var(--primary-hover); }
         .btn:active { transform: scale(0.98); }
-        .btn-small { padding: 8px 14px; font-size: 0.8rem; border-radius: 8px; }
+        .btn-small { padding: 8px 14px; font-size: 0.78rem; border-radius: 8px; }
 
-        /* ПАНЕЛЬ РЕДАКТОРА */
+        /* ПАНЕЛЬ РЕДАКТОРА (СНИЗУ) */
         #editor-controls {
             position: absolute;
-            bottom: 20px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
             display: none;
-            gap: 10px;
+            gap: 12px;
             background: var(--panel-bg);
-            padding: 10px 16px;
-            border-radius: 12px;
-            border: 2px solid var(--panel-border);
+            padding: 12px 20px;
+            border-radius: 14px;
+            border: 1px solid var(--panel-border);
             z-index: 20;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
 
         .btn-rec { background: #ef4444; }
@@ -227,39 +249,45 @@
 
         #exit-btn {
             position: absolute;
-            top: 16px;
-            right: 16px;
+            top: 20px;
+            left: 20px;
             z-index: 15;
             display: none;
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             color: var(--text-main);
-            padding: 8px 14px;
-            border-radius: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
         }
 
-        /* HUD */
+        /* АККУРАТНЫЙ HUD В ПРАВОМ ВЕРХНЕМ УГЛУ */
         #hud {
             position: absolute;
-            top: 16px;
-            left: 16px;
+            top: 20px;
+            right: 20px;
             pointer-events: none;
             z-index: 15;
             display: none;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
             color: var(--text-main);
+            text-align: right;
         }
 
-        .score-text { font-size: 1.6rem; font-weight: 900; }
-        .combo-text { font-size: 0.9rem; color: var(--accent); font-weight: 800; }
+        .hud-score { font-size: 1.8rem; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+        .hud-sub-metrics { display: flex; gap: 12px; font-size: 0.85rem; font-weight: 700; color: var(--text-sub); }
+        .hud-accuracy { color: var(--primary); }
+        .hud-combo { color: var(--accent); }
 
         /* ОВЕРЛЕЙ ОБРАТНОГО ОТСЧЕТА (3-2-1) */
         #countdown-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(9, 13, 22, 0.9);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -268,27 +296,87 @@
         }
 
         #countdown-number {
-            font-size: 6rem;
+            font-size: 7rem;
             font-weight: 900;
             color: var(--primary);
+            line-height: 1;
         }
 
         #countdown-sub {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            color: #94a3b8;
-            margin-top: 10px;
+            color: var(--text-sub);
+            margin-top: 12px;
         }
+
+        /* ФИНАЛЬНОЕ ОКНО РЕЗУЛЬТАТОВ (S-F) */
+        #results-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(9, 13, 22, 0.92);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 35;
+        }
+
+        .results-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 32px;
+            border-radius: 20px;
+            width: 360px;
+            max-width: 90vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .rank-badge {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin: 8px 0;
+        }
+
+        .rank-S { color: #f59e0b; }
+        .rank-A { color: #10b981; }
+        .rank-B { color: #3b82f6; }
+        .rank-C { color: #06b6d4; }
+        .rank-D { color: #8b5cf6; }
+        .rank-F { color: #ef4444; }
+
+        .stats-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .stat-item {
+            background: var(--bg-body);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .stat-label { font-size: 0.7rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+        .stat-value { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
 
         /* ИГРОВОЙ КОНТЕЙНЕР (ОПТИМИЗИРОВАН) */
         #game-container {
             position: relative;
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             height: 100vh;
             background: var(--canvas-bg);
-            border-left: 2px solid var(--panel-border);
-            border-right: 2px solid var(--panel-border);
+            border-left: 1px solid var(--panel-border);
+            border-right: 1px solid var(--panel-border);
             overflow: hidden;
             z-index: 1;
         }
@@ -297,37 +385,70 @@
 
         #hit-feedback {
             position: absolute;
-            top: 55%;
+            top: 60%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 900;
             pointer-events: none;
             opacity: 0;
             letter-spacing: 1px;
+            transition: opacity 0.08s ease;
         }
     </style>
 </head>
 <body>
 
     <audio id="audio-player"></audio>
-    <button id="exit-btn">← Меню</button>
+    <button id="exit-btn">← В меню</button>
 
     <!-- Оверлей обратного отсчета -->
     <div id="countdown-overlay">
         <div id="countdown-number">3</div>
-        <div id="countdown-sub">Приготовьте руки! (Z X C V)</div>
+        <div id="countdown-sub">Приготовьте пальцы! (Z X C V)</div>
+    </div>
+
+    <!-- Результаты уровня -->
+    <div id="results-overlay">
+        <div class="results-card">
+            <h3 style="font-size: 1.2rem; font-weight: 800;">Результаты уровня</h3>
+            <div id="result-rank" class="rank-badge rank-S">S</div>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Счет</div>
+                    <div class="stat-value" id="res-score">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Точность</div>
+                    <div class="stat-value" id="res-accuracy">100%</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Макс. Комбо</div>
+                    <div class="stat-value" id="res-combo">0x</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Perfect / Good / Miss</div>
+                    <div class="stat-value" id="res-breakdown" style="font-size: 0.85rem; margin-top: 6px;">0 / 0 / 0</div>
+                </div>
+            </div>
+
+            <button class="btn" style="width: 100%; margin-top: 8px;" onclick="closeResults()">Продолжить</button>
+        </div>
     </div>
 
     <!-- Главное Меню -->
     <div id="ui-panel">
-        <div class="brand-title">Rhythm Studio</div>
+        <div class="brand-header">
+            <div class="brand-title">Rhythm Studio</div>
+            <div class="brand-subtitle">Flat Edition Studio</div>
+        </div>
         
         <div class="mode-tabs">
             <button class="tab-btn active" onclick="switchTab('official')">GitHub Треки</button>
             <button class="tab-btn" onclick="switchTab('custom')">Пакет (.rs)</button>
             <button class="tab-btn" onclick="switchTab('editor')">Редактор</button>
-            <button class="tab-btn" onclick="switchTab('style')">Стиль</button>
+            <button class="tab-btn" onclick="switchTab('style')">Кастомизация</button>
         </div>
 
         <!-- Таб 1: GitHub Треки -->
@@ -338,17 +459,17 @@
         <!-- Таб 2: Загрузка готового уровня .rs -->
         <div id="tab-custom" class="tab-content">
             <div class="input-group">
-                <label>Выберите единый файл уровня (.rs):</label>
+                <label>Выберите пакет уровня (.rs):</label>
                 <input type="file" id="play-package-input" accept=".rs,.json">
             </div>
-            <button class="btn" id="start-custom-play-btn">Запустить пакет уровня</button>
+            <button class="btn" id="start-custom-play-btn">Запустить пакет</button>
         </div>
 
         <!-- Таб 3: Редактор -->
         <div id="tab-editor" class="tab-content">
             <div class="input-group">
                 <label>Название трека:</label>
-                <input type="text" id="edit-title" value="My Track">
+                <input type="text" id="edit-title" value="New Beat">
             </div>
             <div style="display: flex; gap: 10px;">
                 <div class="input-group" style="flex: 1;">
@@ -364,29 +485,48 @@
                 </div>
             </div>
             <div class="input-group">
-                <label>Сетка квантования (привязка нот):</label>
+                <label>Привязка к сетке (квантование):</label>
                 <select id="edit-quantize">
                     <option value="4">1/4 (Четверти)</option>
                     <option value="8" selected>1/8 (Восьмые)</option>
                     <option value="16">1/16 (Шестнадцатые)</option>
+                    <option value="32">1/32 (Тридцать вторые)</option>
                 </select>
             </div>
             <div class="input-group">
-                <label>Музыка (.mp3, .wav):</label>
+                <label>Музыкальный файл (.mp3, .wav):</label>
                 <input type="file" id="edit-audio-input" accept="audio/*">
             </div>
 
-            <button class="btn" id="start-editor-btn" style="margin-top: 6px;">Открыть студию записи</button>
+            <button class="btn" id="start-editor-btn" style="margin-top: 4px;">Войти в редактор</button>
         </div>
 
-        <!-- Таб 4: Стили -->
+        <!-- Таб 4: Кастомизация -->
         <div id="tab-style" class="tab-content">
             <div class="input-group">
                 <label>Тема оформления:</label>
                 <select id="theme-select">
-                    <option value="flat-dark">Flat Dark (Тёмный плоский)</option>
-                    <option value="flat-light">Flat Light (Светлый плоский)</option>
-                    <option value="flat-emerald">Flat Emerald (Изумрудный)</option>
+                    <option value="flat-dark">Flat Dark (Тёмная)</option>
+                    <option value="flat-light">Flat Light (Светлая)</option>
+                    <option value="flat-emerald">Flat Emerald (Изумрудная)</option>
+                    <option value="slate-indigo">Slate Indigo (Индиго)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Скин нот:</label>
+                <select id="note-skin-select">
+                    <option value="flat-rect">Плоские прямоугольники</option>
+                    <option value="capsule">Закругленные капсулы</option>
+                    <option value="circle">Круги</option>
+                    <option value="diamond">Ромбы</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Стиль игровой дорожки:</label>
+                <select id="lane-style-select">
+                    <option value="lines">Минимальные линии</option>
+                    <option value="columns">Сплошные колонки</option>
+                    <option value="grid">Тактовая сетка</option>
                 </select>
             </div>
         </div>
@@ -394,15 +534,18 @@
 
     <!-- Панель управления записью -->
     <div id="editor-controls">
-        <button class="btn btn-small btn-rec" id="rec-btn">Запись / Пауза</button>
+        <button class="btn btn-small btn-rec" id="rec-btn">Запись / Старт</button>
         <button class="btn btn-small" id="clear-btn" style="background: #64748b;">Очистить</button>
-        <button class="btn btn-small" id="export-btn" style="background: #10b981;">Скачать пакет .RS</button>
+        <button class="btn btn-small" id="export-btn" style="background: #10b981;">Скачать .RS</button>
     </div>
 
-    <!-- HUD -->
+    <!-- HUD (ВЕРХНИЙ ПРАВЫЙ УГОЛ) -->
     <div id="hud">
-        <div class="score-text"><span id="hud-title">Счет:</span> <span id="score-val">0</span></div>
-        <div class="combo-text" id="combo-box">Комбо: <span id="combo-val">0</span>x</div>
+        <div class="hud-score" id="score-val">0</div>
+        <div class="hud-sub-metrics">
+            <span class="hud-accuracy" id="accuracy-val">100.0%</span>
+            <span class="hud-combo"><span id="combo-val">0</span>x</span>
+        </div>
     </div>
 
     <div id="game-container">
@@ -412,34 +555,43 @@
 
     <script>
         const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d', { alpha: false }); // Выключен альфа-канал задника для максимального FPS
+        const ctx = canvas.getContext('2d', { alpha: false });
         const hitFeedback = document.getElementById('hit-feedback');
         const audioPlayer = document.getElementById('audio-player');
 
         let currentMode = 'official'; 
         let isRunning = false;
 
+        // Метрики и счет
         let score = 0;
         let combo = 0;
+        let maxCombo = 0;
+        let perfectCount = 0;
+        let goodCount = 0;
+        let missCount = 0;
+        let evaluatedNotesCount = 0;
+
         let currentBpm = 120;
         let currentTimeSig = '4/4';
 
+        // Скины и темы
         let currentTheme = 'flat-dark';
+        let currentNoteSkin = 'flat-rect';
+        let currentLaneStyle = 'lines';
 
         const THEMES_CONFIG = {
-            'flat-dark': { laneColors: ['#3b82f6', '#06b6d4', '#ec4899', '#8b5cf6'], hitLine: '#3b82f6', bg: '#0f172a' },
-            'flat-light': { laneColors: ['#2563eb', '#0284c7', '#db2777', '#7c3aed'], hitLine: '#2563eb', bg: '#ffffff' },
-            'flat-emerald': { laneColors: ['#10b981', '#06b6d4', '#f59e0b', '#34d399'], hitLine: '#10b981', bg: '#064e3b' }
+            'flat-dark': { laneColors: ['#3b82f6', '#06b6d4', '#ec4899', '#8b5cf6'], hitLine: '#3b82f6', bg: '#090d16', line: '#1f2937' },
+            'flat-light': { laneColors: ['#2563eb', '#0284c7', '#db2777', '#7c3aed'], hitLine: '#2563eb', bg: '#ffffff', line: '#e2e8f0' },
+            'flat-emerald': { laneColors: ['#10b981', '#34d399', '#f59e0b', '#06b6d4'], hitLine: '#10b981', bg: '#022c22', line: '#047857' },
+            'slate-indigo': { laneColors: ['#6366f1', '#38bdf8', '#f43f5e', '#a855f7'], hitLine: '#6366f1', bg: '#0f172a', line: '#312e81' }
         };
 
         const LANES_COUNT = 4;
         const KEYS = ['KeyZ', 'KeyX', 'KeyC', 'KeyV'];
         const LANE_NAMES = ['Z', 'X', 'C', 'V'];
-        const HIT_WINDOW = 0.15; 
+        const HIT_WINDOW = 0.14; 
 
         let levelNotes = []; 
-        let particles = [];
-        const MAX_PARTICLES = 12; // Жесткое ограничение для 60 FPS на мобильных
         let activeHoldStart = [null, null, null, null];
         let lanePressed = [false, false, false, false];
 
@@ -447,7 +599,6 @@
         let isSynthPlaying = false;
         let synthStartTime = 0;
 
-        // Прямые ссылки на репозиторий GitHub для загрузки официальных уровней
         const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/pavel/rhythm-studio-levels/main/";
         const OFFICIAL_LEVELS = [
             { id: 1, title: "Velvet Horizons", bpm: 115, timeSig: "4/4", difficulty: "Easy", file: "velvet_horizons.rs" },
@@ -456,53 +607,43 @@
         ];
 
         function initAudioContext() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
         function playSFX(type) {
             initAudioContext();
             if (!audioCtx) return;
             const now = audioCtx.currentTime;
-
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
 
             if (type === 'tick') {
-                osc.type = 'sine';
                 osc.frequency.setValueAtTime(880, now);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
             } else if (type === 'perfect') {
-                osc.type = 'sine';
                 osc.frequency.setValueAtTime(1046.50, now);
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
             } else if (type === 'miss') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(120, now);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                osc.frequency.setValueAtTime(130, now);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
             }
 
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.15);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.12);
         }
 
         // ВЫРАВНИВАНИЕ / КВАНТОВАНИЕ НОТ ПО BPM
-        function snapToGrid(time, bpm, quantizeSubdivision) {
+        function snapToGrid(time, bpm, subdivision) {
             const beatDuration = 60 / bpm;
-            const stepDuration = beatDuration / (quantizeSubdivision / 4);
+            const stepDuration = beatDuration / (subdivision / 4);
             return Math.round(time / stepDuration) * stepDuration;
         }
 
-        // РЕНДЕР СПИСКА ОФИЦИАЛЬНЫХ УРОВНЕЙ С GITHUB
         function renderOfficialLevels() {
             const container = document.getElementById('official-levels-list');
             container.innerHTML = '';
@@ -526,17 +667,14 @@
         }
         renderOfficialLevels();
 
-        // ПОДГРУЗКА УРОВНЕЙ С GITHUB
         window.loadAndPlayOfficial = async function(fileName, defaultBpm, defaultSig) {
             const url = GITHUB_RAW_BASE + fileName;
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error("Файл не найден на GitHub");
+                if (!response.ok) throw new Error("Файл не найден");
                 const data = await response.json();
                 loadPackageData(data);
             } catch (err) {
-                // Если нет сети или файл ещё не выложен — генерируем демо-уровень
-                console.warn("Ошибка загрузки с GitHub, переход на демо-генерацию:", err.message);
                 generateDemoLevel(defaultBpm, defaultSig);
             }
             startSessionWithCountdown('play');
@@ -549,68 +687,53 @@
             const secPerBeat = 60 / bpm;
             const beatsPerMeasure = sig === '3/4' ? 3 : 4;
             
-            for (let b = 2; b < 60; b++) {
+            for (let b = 2; b < 50; b++) {
                 const time = b * secPerBeat;
                 const lane = b % 4;
+                const isHold = (b % (beatsPerMeasure * 2) === 0);
                 levelNotes.push({
                     time: parseFloat(time.toFixed(3)),
                     lane: lane,
-                    duration: (b % (beatsPerMeasure * 2) === 0) ? parseFloat((secPerBeat * 1.5).toFixed(3)) : 0
+                    duration: isHold ? parseFloat((secPerBeat * 1.5).toFixed(3)) : 0
                 });
             }
-            audioPlayer.src = ""; // Используется процедурный синтезатор
+            audioPlayer.src = "";
         }
 
-        // РАБОТА С ЕДИНЫМ ПАКЕТОМ УРОВНЯ (.RS)
         function loadPackageData(data) {
             if (data.bpm) currentBpm = data.bpm;
             if (data.timeSignature) currentTimeSig = data.timeSignature;
-            if (data.notes) levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false }));
-
-            if (data.audioData) {
-                audioPlayer.src = data.audioData;
-            } else {
-                audioPlayer.src = "";
-            }
+            if (data.notes) levelNotes = data.notes.map(n => ({ ...n, hit: false, missed: false, holding: false }));
+            audioPlayer.src = data.audioData || "";
         }
 
-        // ОБРАБОТЧИК ЗАГРУЗКИ ФАЙЛА .RS В ВКЛАДКЕ
         document.getElementById('play-package-input').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = (evt) => {
                 try {
-                    const data = JSON.parse(event.target.result);
-                    loadPackageData(data);
-                    alert(`Уровень "${data.title || 'Custom'}" успешно загружен!`);
-                } catch (err) { alert('Ошибка чтения файла .rs пакета!'); }
+                    loadPackageData(JSON.parse(evt.target.result));
+                    alert('Пакет уровней загружен!');
+                } catch (err) { alert('Ошибка загрузки .rs файла!'); }
             };
             reader.readAsText(file);
         });
 
         document.getElementById('start-custom-play-btn').addEventListener('click', () => {
-            if (levelNotes.length === 0) {
-                alert('Сначала выберите файл уровня (.rs)!');
-                return;
-            }
+            if (levelNotes.length === 0) return alert('Выберите файл уровня (.rs)!');
             startSessionWithCountdown('play');
         });
 
-        // ЭКСПОРТ ЕДИНОГО ПАКЕТА .RS ИЗ РЕДАКТОРА
         document.getElementById('export-btn').addEventListener('click', async () => {
             const title = document.getElementById('edit-title').value || 'My Level';
             const quantizeVal = parseInt(document.getElementById('edit-quantize').value) || 8;
             
-            // Выравниваем все ноты строго по сетке BPM при экспорте
-            levelNotes.forEach(n => {
-                n.time = snapToGrid(n.time, currentBpm, quantizeVal);
-            });
+            levelNotes.forEach(n => n.time = snapToGrid(n.time, currentBpm, quantizeVal));
             levelNotes.sort((a, b) => a.time - b.time);
 
             let audioDataStr = "";
             const audioInput = document.getElementById('edit-audio-input');
-
             if (audioInput.files && audioInput.files[0]) {
                 audioDataStr = await new Promise((resolve) => {
                     const r = new FileReader();
@@ -639,7 +762,7 @@
         });
 
         // ОБРАТНЫЙ ОТСЧЕТ 3-2-1
-        function startSessionWithCountdown(mode) {
+        function startSessionWithCountdown(mode, onComplete) {
             initAudioContext();
             document.getElementById('ui-panel').style.display = 'none';
 
@@ -662,9 +785,10 @@
                 } else {
                     clearInterval(timer);
                     countdownOverlay.style.display = 'none';
-                    startSession(mode);
+                    if (onComplete) onComplete();
+                    else startSession(mode);
                 }
-            }, 750);
+            }, 700);
         }
 
         function resizeCanvas() {
@@ -690,41 +814,24 @@
             document.documentElement.setAttribute('data-theme', currentTheme);
         });
 
+        document.getElementById('note-skin-select').addEventListener('change', (e) => { currentNoteSkin = e.target.value; });
+        document.getElementById('lane-style-select').addEventListener('change', (e) => { currentLaneStyle = e.target.value; });
+
         function startSynthAudio() {
             stopSynthAudio();
             initAudioContext();
             synthStartTime = audioCtx.currentTime;
             isSynthPlaying = true;
-            playSynthLoop();
         }
 
         function stopSynthAudio() { isSynthPlaying = false; }
-
-        function playSynthLoop() {
-            if (!isSynthPlaying || !audioCtx) return;
-            const now = audioCtx.currentTime - synthStartTime;
-            
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            
-            const freqs = [261.63, 329.63, 392.00, 523.25];
-            osc.frequency.setValueAtTime(freqs[Math.floor(now * 4) % 4], audioCtx.currentTime);
-
-            gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-
-            setTimeout(playSynthLoop, (60 / currentBpm) * 500);
-        }
 
         function getCurrentGameTime() {
             if (isSynthPlaying && audioCtx) return audioCtx.currentTime - synthStartTime;
             return audioPlayer.currentTime;
         }
 
+        // ВХОД В РЕДАКТОР (БЕЗ 3-2-1)
         document.getElementById('start-editor-btn').addEventListener('click', () => {
             currentBpm = parseInt(document.getElementById('edit-bpm').value) || 120;
             currentTimeSig = document.getElementById('edit-timesig').value || '4/4';
@@ -733,37 +840,48 @@
             if (fileInput.files && fileInput.files[0]) {
                 audioPlayer.src = URL.createObjectURL(fileInput.files[0]);
             }
-            startSessionWithCountdown('editor');
+            
+            startSession('editor'); // Войти сразу без отсчета
         });
 
+        // ЗАПУСК ЗАПИСИ В РЕДАКТОРЕ (С 3-2-1)
         const recBtn = document.getElementById('rec-btn');
         recBtn.addEventListener('click', () => {
             initAudioContext();
-            if (audioPlayer.src) {
-                if (audioPlayer.paused) {
-                    audioPlayer.play();
-                    recBtn.textContent = 'Пауза';
-                    recBtn.classList.add('recording');
+            
+            const togglePlay = () => {
+                if (audioPlayer.src) {
+                    if (audioPlayer.paused) {
+                        audioPlayer.play();
+                        recBtn.textContent = 'Пауза';
+                        recBtn.classList.add('recording');
+                    } else {
+                        audioPlayer.pause();
+                        recBtn.textContent = 'Запись';
+                        recBtn.classList.remove('recording');
+                    }
                 } else {
-                    audioPlayer.pause();
-                    recBtn.textContent = 'Запись';
-                    recBtn.classList.remove('recording');
+                    if (!isSynthPlaying) {
+                        startSynthAudio();
+                        recBtn.textContent = 'Пауза';
+                        recBtn.classList.add('recording');
+                    } else {
+                        stopSynthAudio();
+                        recBtn.textContent = 'Запись';
+                        recBtn.classList.remove('recording');
+                    }
                 }
+            };
+
+            if (audioPlayer.paused && !isSynthPlaying) {
+                startSessionWithCountdown('editor', togglePlay);
             } else {
-                if (!isSynthPlaying) {
-                    startSynthAudio();
-                    recBtn.textContent = 'Пауза';
-                    recBtn.classList.add('recording');
-                } else {
-                    stopSynthAudio();
-                    recBtn.textContent = 'Запись';
-                    recBtn.classList.remove('recording');
-                }
+                togglePlay();
             }
         });
 
         document.getElementById('clear-btn').addEventListener('click', () => {
-            if (confirm('Очистить все ноты?')) {
+            if (confirm('Очистить все записанные ноты?')) {
                 levelNotes = [];
                 document.getElementById('score-val').textContent = '0';
             }
@@ -781,35 +899,87 @@
 
         function startSession(mode) {
             initAudioContext();
-            document.getElementById('hud').style.display = 'block';
+            document.getElementById('hud').style.display = 'flex';
             document.getElementById('exit-btn').style.display = 'block';
+
+            score = 0; combo = 0; maxCombo = 0;
+            perfectCount = 0; goodCount = 0; missCount = 0; evaluatedNotesCount = 0;
 
             if (mode === 'editor') {
                 document.getElementById('editor-controls').style.display = 'flex';
-                document.getElementById('hud-title').textContent = 'Ноты:';
-                document.getElementById('combo-box').style.display = 'none';
                 document.getElementById('score-val').textContent = levelNotes.length;
+                document.getElementById('accuracy-val').textContent = '100.0%';
+                document.getElementById('combo-val').textContent = '0';
             } else {
                 document.getElementById('editor-controls').style.display = 'none';
-                document.getElementById('hud-title').textContent = 'Счет:';
-                document.getElementById('combo-box').style.display = 'block';
-                score = 0; combo = 0; updateHUD();
-                if (audioPlayer.src) audioPlayer.play();
-                else startSynthAudio();
+                updateHUD();
+                if (audioPlayer.src) {
+                    audioPlayer.currentTime = 0;
+                    audioPlayer.play();
+                } else {
+                    startSynthAudio();
+                }
             }
 
             isRunning = true;
             requestAnimationFrame(gameLoop);
         }
 
-        // ОБПТИМИЗИРОВАННЫЙ ЦИКЛ ОТРЕСОВКИ РЕНДЕРА (60 FPS)
+        // ОБРАБОТКА ОКОНЧАНИЯ УРОВНЯ И ВЫЧИСЛЕНИЕ РАНГА (S-F)
+        function checkTrackEnd() {
+            if (currentMode === 'editor') return;
+
+            let isEnded = false;
+            if (audioPlayer.src && audioPlayer.ended) isEnded = true;
+            if (isSynthPlaying && getCurrentGameTime() > 120) isEnded = true;
+
+            if (isEnded) {
+                isRunning = false;
+                showResults();
+            }
+        }
+
+        function calculateAccuracy() {
+            if (evaluatedNotesCount === 0) return 100.0;
+            const totalPoints = (perfectCount * 100) + (goodCount * 75);
+            return (totalPoints / (evaluatedNotesCount * 100)) * 100;
+        }
+
+        function showResults() {
+            const accuracy = calculateAccuracy();
+            let rank = 'F';
+
+            if (accuracy >= 97.5) rank = 'S';
+            else if (accuracy >= 94.5) rank = 'A';
+            else if (accuracy >= 90.0) rank = 'B';
+            else if (accuracy >= 80.5) rank = 'C';
+            else if (accuracy >= 65.0) rank = 'D';
+
+            const rankElem = document.getElementById('result-rank');
+            rankElem.textContent = rank;
+            rankElem.className = `rank-badge rank-${rank}`;
+
+            document.getElementById('res-score').textContent = score;
+            document.getElementById('res-accuracy').textContent = accuracy.toFixed(1) + '%';
+            document.getElementById('res-combo').textContent = maxCombo + 'x';
+            document.getElementById('res-breakdown').textContent = `${perfectCount} / ${goodCount} / ${missCount}`;
+
+            document.getElementById('results-overlay').style.display = 'flex';
+        }
+
+        window.closeResults = function() {
+            document.getElementById('results-overlay').style.display = 'none';
+            document.getElementById('exit-btn').click();
+        };
+
+        // РЕНДЕР ИГРОВОГО ЦИКЛА (60 FPS)
         function gameLoop() {
             if (!isRunning) return;
 
             const currentTime = getCurrentGameTime();
             const themeCfg = THEMES_CONFIG[currentTheme];
 
-            // Быстрая заливка фона без очистки через прозрачность
+            // Заливка фона
             ctx.fillStyle = themeCfg.bg;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -818,33 +988,37 @@
             const scrollDuration = (140 / currentBpm) * 1.2;
             const laneColors = themeCfg.laneColors;
 
-            // Отрисовка дорожек и нажатий
+            // Отрисовка дорожек
             for (let i = 0; i < LANES_COUNT; i++) {
-                ctx.strokeStyle = currentTheme === 'flat-light' ? '#e2e8f0' : '#1e293b';
-                ctx.lineWidth = 2;
+                if (currentLaneStyle === 'columns') {
+                    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent';
+                    ctx.fillRect(i * laneWidth, 0, laneWidth, canvas.height);
+                }
+
+                ctx.strokeStyle = themeCfg.line;
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(i * laneWidth, 0);
                 ctx.lineTo(i * laneWidth, canvas.height);
                 ctx.stroke();
 
                 if (lanePressed[i]) {
-                    ctx.fillStyle = laneColors[i] + '44';
+                    ctx.fillStyle = laneColors[i] + '33';
                     ctx.fillRect(i * laneWidth, 0, laneWidth, canvas.height);
                 }
 
-                ctx.fillStyle = lanePressed[i] ? laneColors[i] : (currentTheme === 'flat-light' ? '#64748b' : '#94a3b8');
-                ctx.font = '800 16px Inter';
+                ctx.fillStyle = lanePressed[i] ? laneColors[i] : (currentTheme === 'flat-light' ? '#64748b' : '#9ca3af');
+                ctx.font = '800 15px Plus Jakarta Sans';
                 ctx.textAlign = 'center';
-                ctx.fillText(LANE_NAMES[i], i * laneWidth + laneWidth / 2, hitLineY + 36);
+                ctx.fillText(LANE_NAMES[i], i * laneWidth + laneWidth / 2, hitLineY + 34);
             }
 
-            // Отрисовка тактовых линий по BPM и Размеру (3/4 или 4/4)
+            // Тактовые линии
             const beatsPerMeasure = currentTimeSig === '3/4' ? 3 : 4;
             const secPerBeat = 60 / currentBpm;
             const startBeat = Math.floor((currentTime - scrollDuration) / secPerBeat);
             const endBeat = Math.ceil((currentTime + scrollDuration) / secPerBeat);
 
-            ctx.lineWidth = 1;
             for (let b = startBeat; b <= endBeat; b++) {
                 const beatTime = b * secPerBeat;
                 const timeDiff = beatTime - currentTime;
@@ -852,7 +1026,7 @@
 
                 if (y >= 0 && y <= canvas.height) {
                     const isMeasureStart = (b % beatsPerMeasure) === 0;
-                    ctx.strokeStyle = isMeasureStart ? 'rgba(245, 158, 11, 0.6)' : 'rgba(148, 163, 184, 0.15)';
+                    ctx.strokeStyle = isMeasureStart ? 'rgba(245, 158, 11, 0.4)' : 'rgba(156, 163, 175, 0.12)';
                     ctx.beginPath();
                     ctx.moveTo(0, y);
                     ctx.lineTo(canvas.width, y);
@@ -862,36 +1036,42 @@
 
             // Линия удара
             ctx.strokeStyle = themeCfg.hitLine;
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(0, hitLineY);
             ctx.lineTo(canvas.width, hitLineY);
             ctx.stroke();
 
-            // Отрисовка нот
+            // Отрисовка и логика нот
             levelNotes.forEach(note => {
                 const timeDiff = note.time - currentTime;
                 const dur = note.duration || 0;
 
                 if (currentMode !== 'editor') {
+                    // Пропуск ноты (Miss)
                     if (timeDiff + dur < -HIT_WINDOW && !note.missed && !note.hit) {
                         note.missed = true;
                         combo = 0;
+                        missCount++;
+                        evaluatedNotesCount++;
                         updateHUD();
                         showFeedback('MISS', '#ef4444');
                         playSFX('miss');
                     }
 
+                    // Удержание длинной ноты
                     if (note.holding) {
-                        spawnParticles(note.lane * laneWidth + laneWidth / 2, hitLineY, laneColors[note.lane]);
-                        score += 2;
+                        score += 3;
                         updateHUD();
 
                         if (currentTime >= note.time + note.duration) {
                             note.holding = false;
                             note.hit = true;
-                            score += 200;
+                            score += 150;
                             combo++;
+                            if (combo > maxCombo) maxCombo = combo;
+                            perfectCount++;
+                            evaluatedNotesCount++;
                             updateHUD();
                             showFeedback('PERFECT', '#10b981');
                             playSFX('perfect');
@@ -908,57 +1088,51 @@
                         const yTail = hitLineY - ((timeDiff + dur) / scrollDuration) * hitLineY;
                         drawHoldNote(note.lane * laneWidth, yHead, yTail, laneWidth, laneColors[note.lane]);
                     } else {
-                        drawFlatNote(note.lane * laneWidth, yHead, laneWidth, laneColors[note.lane]);
+                        drawNoteSkin(note.lane * laneWidth, yHead, laneWidth, laneColors[note.lane]);
                     }
                 }
             });
 
-            updateAndDrawParticles();
+            checkTrackEnd();
             requestAnimationFrame(gameLoop);
         }
 
-        function drawFlatNote(x, y, laneWidth, color) {
-            const padding = 8;
+        // ОТРИСОВКА СКИНОВ НОТ
+        function drawNoteSkin(x, y, laneWidth, color) {
+            const padding = 10;
             const w = laneWidth - padding * 2;
             ctx.fillStyle = color;
-            ctx.fillRect(x + padding, y - 8, w, 16);
-        }
 
-        function drawHoldNote(x, yHead, yTail, laneWidth, color) {
-            const padding = 12;
-            const width = laneWidth - padding * 2;
-            ctx.fillStyle = color + '55';
-            ctx.fillRect(x + padding, yTail, width, yHead - yTail);
-            drawFlatNote(x, yHead, laneWidth, color);
-        }
-
-        function spawnParticles(x, y, color) {
-            if (particles.length > MAX_PARTICLES) return;
-            particles.push({
-                x: x, y: y,
-                vx: (Math.random() - 0.5) * 3,
-                vy: (Math.random() - 0.5) * 3,
-                color: color,
-                size: 3,
-                alpha: 1
-            });
-        }
-
-        function updateAndDrawParticles() {
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.vx; p.y += p.vy; p.alpha -= 0.08;
-
-                if (p.alpha <= 0) {
-                    particles.splice(i, 1);
-                    continue;
-                }
-
-                ctx.fillStyle = p.color;
-                ctx.fillRect(p.x, p.y, p.size, p.size);
+            if (currentNoteSkin === 'flat-rect') {
+                ctx.fillRect(x + padding, y - 7, w, 14);
+            } else if (currentNoteSkin === 'capsule') {
+                ctx.beginPath();
+                ctx.roundRect(x + padding, y - 8, w, 16, 8);
+                ctx.fill();
+            } else if (currentNoteSkin === 'circle') {
+                ctx.beginPath();
+                ctx.arc(x + laneWidth / 2, y, 10, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (currentNoteSkin === 'diamond') {
+                ctx.beginPath();
+                ctx.moveTo(x + laneWidth / 2, y - 10);
+                ctx.lineTo(x + laneWidth - padding, y);
+                ctx.lineTo(x + laneWidth / 2, y + 10);
+                ctx.lineTo(x + padding, y);
+                ctx.closePath();
+                ctx.fill();
             }
         }
 
+        function drawHoldNote(x, yHead, yTail, laneWidth, color) {
+            const padding = 14;
+            const width = laneWidth - padding * 2;
+            ctx.fillStyle = color + '44';
+            ctx.fillRect(x + padding, yTail, width, yHead - yTail);
+            drawNoteSkin(x, yHead, laneWidth, color);
+        }
+
+        // ОБРАБОТКА НАЖАТИЙ (Z X C V / TOUCH)
         function handlePressStart(laneIndex) {
             if (!isRunning) return;
             lanePressed[laneIndex] = true;
@@ -966,18 +1140,8 @@
 
             if (currentMode === 'editor') {
                 const quantizeVal = parseInt(document.getElementById('edit-quantize').value) || 8;
-                // Привязываем время нажатия строго по сетке BPM
                 const snappedTime = snapToGrid(currentTime, currentBpm, quantizeVal);
-
-                levelNotes.push({
-                    time: parseFloat(snappedTime.toFixed(3)),
-                    duration: 0,
-                    lane: laneIndex
-                });
-
-                document.getElementById('score-val').textContent = levelNotes.length;
-                showFeedback('TAP', '#10b981');
-                playSFX('perfect');
+                activeHoldStart[laneIndex] = snappedTime;
             } else {
                 const targetNote = levelNotes.find(n => 
                     n.lane === laneIndex && 
@@ -994,15 +1158,17 @@
                         showFeedback('HOLD', THEMES_CONFIG[currentTheme].laneColors[laneIndex]);
                     } else {
                         targetNote.hit = true;
+                        evaluatedNotesCount++;
                         if (diff < 0.06) { 
-                            score += 300; combo++; 
+                            score += 300; combo++; perfectCount++;
                             showFeedback('PERFECT', '#10b981'); 
                             playSFX('perfect'); 
                         } else { 
-                            score += 100; combo++; 
+                            score += 150; combo++; goodCount++;
                             showFeedback('GOOD', '#f59e0b'); 
                             playSFX('perfect'); 
                         }
+                        if (combo > maxCombo) maxCombo = combo;
                         updateHUD();
                     }
                 } else {
@@ -1014,18 +1180,54 @@
         function handlePressEnd(laneIndex) {
             if (!isRunning) return;
             lanePressed[laneIndex] = false;
+            const currentTime = getCurrentGameTime();
+
+            if (currentMode === 'editor' && activeHoldStart[laneIndex] !== null) {
+                const quantizeVal = parseInt(document.getElementById('edit-quantize').value) || 8;
+                const start = activeHoldStart[laneIndex];
+                const end = snapToGrid(currentTime, currentBpm, quantizeVal);
+                let duration = Math.max(0, end - start);
+
+                // Если удержание было короче 1/16 доли, считаем одиночной нотой
+                if (duration < (60 / currentBpm / (quantizeVal / 4))) duration = 0;
+
+                levelNotes.push({
+                    time: parseFloat(start.toFixed(3)),
+                    duration: parseFloat(duration.toFixed(3)),
+                    lane: laneIndex
+                });
+
+                activeHoldStart[laneIndex] = null;
+                document.getElementById('score-val').textContent = levelNotes.length;
+                showFeedback(duration > 0 ? 'HOLD' : 'TAP', '#10b981');
+                playSFX('perfect');
+            } else {
+                const holdingNote = levelNotes.find(n => n.lane === laneIndex && n.holding);
+                if (holdingNote) {
+                    holdingNote.holding = false;
+                    holdingNote.hit = true;
+                    evaluatedNotesCount++;
+                    goodCount++;
+                    updateHUD();
+                }
+            }
         }
 
         function showFeedback(text, color) {
             hitFeedback.textContent = text;
             hitFeedback.style.color = color;
             hitFeedback.style.opacity = '1';
-            setTimeout(() => { hitFeedback.style.opacity = '0'; }, 120);
+            setTimeout(() => { hitFeedback.style.opacity = '0'; }, 100);
         }
 
         function updateHUD() {
-            document.getElementById('score-val').textContent = score;
-            document.getElementById('combo-val').textContent = combo;
+            if (currentMode === 'editor') {
+                document.getElementById('score-val').textContent = levelNotes.length;
+            } else {
+                document.getElementById('score-val').textContent = score;
+                document.getElementById('accuracy-val').textContent = calculateAccuracy().toFixed(1) + '%';
+                document.getElementById('combo-val').textContent = combo;
+            }
         }
 
         window.addEventListener('keydown', (e) => {
